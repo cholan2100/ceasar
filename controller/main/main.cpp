@@ -16,6 +16,7 @@ void task_controller(void *ignore)
 
     // initialize controller state machine
     static SpotMicroMotionCmd node;
+    // bool debug_mode = node.getNodeConfig().debug_mode; 
     if(!node.publishServoConfiguration())
     {
         ESP_LOGE(tag, "Error setting of servos");
@@ -26,7 +27,13 @@ void task_controller(void *ignore)
     // Controller loop
     while(1)
     {
+        node.runOnce();
+        
+        //TODO: establish the loop rate
         vTaskDelay(100 / portTICK_RATE_MS);
+
+        //TODO: simulate commands for tests
+
     }
     vTaskDelete(NULL);
 }
