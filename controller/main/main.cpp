@@ -5,7 +5,7 @@
 #include <freertos/task.h>
 
 #include "comms.h"
-#include "i2cpwm_controller.h"
+#include "servocontrol.h"
 #include "spot_micro_motion_cmd.h"
 
 static char tag[] = "ceasar";
@@ -16,12 +16,12 @@ void task_controller(void *ignore)
 
     // initialize controller state machine
     static SpotMicroMotionCmd node;
-    // if(!node.publishServoConfiguration())
-    // {
-    //     ESP_LOGE(tag, "Error setting of servos");
-    //     vTaskDelete(NULL);
-    //     return;
-    // }
+    if(!node.publishServoConfiguration())
+    {
+        ESP_LOGE(tag, "Error setting of servos");
+        vTaskDelete(NULL);
+        return;
+    }
 
     // Controller loop
     while(1)
@@ -41,7 +41,8 @@ extern "C" void app_main()
     ESP_ERROR_CHECK( ret );
     ESP_LOGI(tag, "Spot Micro ESP32 controller");
 
-    i2cpwm_board::init();
+    //TODO: check fails and update NeoPixel status
+    servocontrol::init();
     comms::init();
 
     xTaskCreate(task_controller, "task_controller", 1025 * 2, (void* ) 0, 10, NULL);

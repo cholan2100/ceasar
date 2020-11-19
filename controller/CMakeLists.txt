@@ -6,4 +6,4 @@ set(CMAKE_CXX_STANDARD 14)
 
 list(APPEND EXTRA_COMPONENT_DIRS "components/pca9685" "components/esp-dsp" "components/spot_micro_kinematics" )
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(ceasar_esp32)
+project(ceasar)

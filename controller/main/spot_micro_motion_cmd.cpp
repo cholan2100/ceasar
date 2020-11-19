@@ -57,7 +57,7 @@ SpotMicroMotionCmd::SpotMicroMotionCmd()
 
   // Initialize servo array message with 12 servo objects
   for (int i = 1; i <= smnc_.num_servos; i++) {
-    i2cpwm_board::Servo temp_servo;
+    servocontrol::Servo temp_servo;
     temp_servo.servo = i;
     temp_servo.value = 0;
     servo_array_[i] = temp_servo;
@@ -158,8 +158,8 @@ void SpotMicroMotionCmd::readInConfigParameters() {
 bool SpotMicroMotionCmd::publishServoConfiguration()
 {
   // Create a temporary servo config
-  i2cpwm_board::ServoConfig temp_servo_config;
-  std::map<int, i2cpwm_board::ServoConfig> servo_config;
+  servocontrol::ServoConfig temp_servo_config;
+  std::map<int, servocontrol::ServoConfig> servo_config;
 
   // Loop through servo configuration dictionary in smnc_, append servo to
   for (std::map<std::string, std::map<std::string, float>>::iterator
@@ -176,7 +176,7 @@ bool SpotMicroMotionCmd::publishServoConfiguration()
     // Append to temp_servo_config_array
     servo_config[temp_servo_config.servo] = temp_servo_config;
   }
-  i2cpwm_board::config(servo_config);
+  servocontrol::config(servo_config);
   return true;
 }
 
@@ -216,7 +216,7 @@ LegsFootPos SpotMicroMotionCmd::getLieDownStance() {
 }
 
 void SpotMicroMotionCmd::publishZeroServoAbsoluteCommand() {
-  i2cpwm_board::servos_absolute(servo_array_absolute_);
+  servocontrol::servos_absolute(servo_array_absolute_);
 }
 
 void SpotMicroMotionCmd::handleInputCommands() {
@@ -291,7 +291,7 @@ void SpotMicroMotionCmd::publishServoProportionalCommand() {
     servo_array_[servo_num-1].servo = servo_num;
     servo_array_[servo_num-1].value = servo_proportional_cmd; 
 
-    i2cpwm_board::servos_proportional (servo_array_);
+    servocontrol::servos_proportional (servo_array_);
  }
 }
 

@@ -1,13 +1,13 @@
 
-#include "i2cpwm_controller.h"
+#include "servocontrol.h"
 extern "C" {
 #include "pca9685.h"
 #include "config.h"
 }
 
-static char tag[] = "I2CPWM";
+static char tag[] = "servo";
 
-namespace i2cpwm_board
+namespace servocontrol
 {
 
 #define I2C_MASTER_FREQ_HZ  100000     /*!< I2C master clock frequency */
@@ -63,6 +63,7 @@ int init()
 
 int config(std::map<int, ServoConfig> servo_config)
 {
+    ESP_LOGI(tag, "Servo controller configured");
     //TODO: cache the config
     return 0;
 }

@@ -4,7 +4,7 @@
 
 #include <map>
 
-namespace i2cpwm_board
+namespace servocontrol
 {
     typedef struct _servo {
         int servo;

@@ -14,7 +14,7 @@
 #else // ESP_PLATFORM
 #include <map>
 #include <vector>
-#include "i2cpwm_controller.h"
+#include "servocontrol.h"
 #endif // ESP_PLATFORM
 
 #include "command.h"
@@ -135,9 +135,9 @@ class SpotMicroMotionCmd
   void readInConfigParameters();
 
   // Servo array message for servo proportional command
-  i2cpwm_board::ServoArray servo_array_;
+  servocontrol::ServoArray servo_array_;
   // Servo array message for servo absolute command
-  i2cpwm_board::ServoArray servo_array_absolute_;
+  servocontrol::ServoArray servo_array_absolute_;
 
 public:
   // Callback method for stand command

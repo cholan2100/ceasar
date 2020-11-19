@@ -2,7 +2,7 @@ idf_component_register(
     SRCS    main.cpp
             bt_spp.c
             comms.cpp
-            i2cpwm_controller.cpp
+            servocontrol.cpp
             spot_micro_motion_cmd.cpp
             smfsm/spot_micro_idle.cpp
             smfsm/spot_micro_stand.cpp
