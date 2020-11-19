@@ -1,0 +1,6 @@
+[submodule "controller/components/kinematics/spot_micro_kinematics_cpp"]
+        path = controller/components/kinematics/spot_micro_kinematics_cpp
+        url = https://github.com/cholan2100/spot_micro_kinematics_cpp.git
+[submodule "controller/components/esp-dsp"]
+        path = controller/components/esp-dsp
+        url = https://github.com/espressif/esp-dsp.git
