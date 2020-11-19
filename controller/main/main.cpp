@@ -2,6 +2,7 @@
 #include <nvs_flash.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <sys/time.h>
 
 #include "comms.h"
 #include "servocontrol.h"
@@ -25,6 +26,8 @@ void task_controller(void *ignore)
     }
 
     bool test_initiated = false;
+    struct timeval start_time;
+    gettimeofday(&start_time, NULL);
 
     // Controller loop
     while(1)
@@ -38,8 +41,13 @@ void task_controller(void *ignore)
         //TODO: use push button instead
         if(!test_initiated)
         {
-            motion.command_stand();
-            test_initiated = true;
+            struct timeval current_time;
+            gettimeofday(&current_time, NULL);
+            if((current_time.tv_sec - start_time.tv_sec) >= 5)
+            {
+                motion.command_stand();
+                test_initiated = true;
+            }
         }
 
     }
