@@ -129,7 +129,7 @@ void SpotMicroMotionCmd::readInConfigParameters()
 	smnc_.servo_config["LF_1"] = {{"num", 12}, {"center", 306}, {"range", 403}, {"direction", 1}, {"center_angle_deg", -9.0f}};
 }
 
-bool SpotMicroMotionCmd::publishServoConfiguration()
+bool SpotMicroMotionCmd::init()
 {
 	// Create a temporary servo config
 	servocontrol::ServoConfig temp_servo_config;

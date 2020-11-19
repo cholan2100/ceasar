@@ -15,11 +15,11 @@ void task_controller(void *ignore)
     ESP_LOGI(tag, "Locking to CPU: %d", xPortGetCoreID());
 
     // initialize controller state machine
-    static SpotMicroMotionCmd node;
-    // bool debug_mode = node.getNodeConfig().debug_mode; 
-    if(!node.publishServoConfiguration())
+    static SpotMicroMotionCmd motion;
+    // bool debug_mode = motion.getNodeConfig().debug_mode; 
+    if(!motion.init())
     {
-        ESP_LOGE(tag, "Error setting of servos");
+        ESP_LOGE(tag, "Error initializing motion gait");
         vTaskDelete(NULL);
         return;
     }
@@ -27,7 +27,7 @@ void task_controller(void *ignore)
     // Controller loop
     while(1)
     {
-        node.runOnce();
+        motion.runOnce();
         
         //TODO: establish the loop rate
         vTaskDelay(100 / portTICK_RATE_MS);

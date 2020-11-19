@@ -64,8 +64,8 @@ public:
 	~SpotMicroMotionCmd(); // distructor method
 	void runOnce();		   // runOnce method to control the flow of program
 
-	// Publish a servo configuration message
-	bool publishServoConfiguration();
+	// initialize
+	bool init();
 
 	// Set servo proprotional message data
 	void setServoCommandMessageData();
