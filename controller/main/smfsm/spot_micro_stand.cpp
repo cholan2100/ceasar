@@ -5,6 +5,9 @@
 #include "../spot_micro_motion_cmd.h"
 #include "rate_limited_first_order_filter.h"
 
+#include <esp_log.h>
+static char tag[] = "stand";
+
 SpotMicroStandState::SpotMicroStandState() {
   // Construcotr, doesn't need to do anything, for now...
   //std::cout << "SpotMicroStandState Ctor" << std::endl;
@@ -21,7 +24,7 @@ void SpotMicroStandState::handleInputCommands(const smk::BodyState& body_state,
                                    smk::BodyState* body_state_cmd) {
 
   if (smnc.debug_mode) {
-    std::cout << "In Spot Micro Stand State" << std::endl;
+    ESP_LOGD(tag, "In Spot Micro Stand State");
   }
 
   

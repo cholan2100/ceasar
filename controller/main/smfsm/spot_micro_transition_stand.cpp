@@ -4,6 +4,9 @@
 #include "../spot_micro_motion_cmd.h"
 #include "spot_micro_state.h"
 
+#include <esp_log.h>
+static char tag[] = "trans2stand";
+
 SpotMicroTransitionStandState::SpotMicroTransitionStandState() {
   // Construcotr, doesn't need to do anything, for now...
   //std::cout << "SpotMicroTransitionStandState Ctor" << std::endl;
@@ -56,7 +59,7 @@ void SpotMicroTransitionStandState::handleInputCommands(
                                    SpotMicroMotionCmd* smmc,
                                    smk:: BodyState* body_state_cmd) {
   if (smnc.debug_mode) {
-    std::cout << "In Spot Micro Transition Stand State" << std::endl;
+    ESP_LOGD(tag, "In Spot Micro Transition Stand State");
   }
   
   // Check if desired end state reached, if so, change to stand state

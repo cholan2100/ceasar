@@ -4,6 +4,7 @@
 #include "spot_micro_motion_cmd.h"
 #include "spot_micro_kinematics/spot_micro_kinematics.h"
 #include "spot_micro_idle.h"
+#include "config.h"
 
 #include <esp_log.h>
 static char tag[] = "gait";
@@ -81,7 +82,7 @@ void SpotMicroMotionCmd::readInConfigParameters()
 	// # Node parameters
 	smnc_.dt = 0.02; //# 50hz
 
-	smnc_.debug_mode = false;
+	smnc_.debug_mode = DEBUG_MODE;
 	smnc_.plot_mode = false; //FIXME
 
 	// # Gait parameters

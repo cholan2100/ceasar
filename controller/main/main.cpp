@@ -1,6 +1,5 @@
 #include <nvs.h>
 #include <nvs_flash.h>
-#include <esp_log.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
@@ -8,6 +7,7 @@
 #include "servocontrol.h"
 #include "spot_micro_motion_cmd.h"
 
+#include <esp_log.h>
 static char tag[] = "ceasar";
 
 void task_controller(void *ignore)
@@ -24,6 +24,8 @@ void task_controller(void *ignore)
         return;
     }
 
+    bool test_initiated = false;
+
     // Controller loop
     while(1)
     {
@@ -32,7 +34,13 @@ void task_controller(void *ignore)
         //TODO: establish the loop rate
         vTaskDelay(100 / portTICK_RATE_MS);
 
-        //TODO: simulate commands for tests
+        // simulate commands for tests
+        //TODO: use push button instead
+        if(!test_initiated)
+        {
+            motion.command_stand();
+            test_initiated = true;
+        }
 
     }
     vTaskDelete(NULL);

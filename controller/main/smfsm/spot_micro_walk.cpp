@@ -7,6 +7,9 @@
 #include "../spot_micro_motion_cmd.h"
 #include "rate_limited_first_order_filter.h"
 
+#include <esp_log.h>
+static char tag[] = "walk";
+
 SpotMicroWalkState::SpotMicroWalkState() {
   contact_feet_states_.right_back_in_swing = false;
   contact_feet_states_.right_front_in_swing = false;
@@ -29,7 +32,7 @@ void SpotMicroWalkState::handleInputCommands(const smk::BodyState& body_state,
                                    smk::BodyState* body_state_cmd) {
   // Debug output
   if (smnc.debug_mode) {
-    std::cout << "In Spot Micro Walk State" << std::endl;
+     ESP_LOGD(tag, "In Spot Micro Walk State");
   }
 
 
