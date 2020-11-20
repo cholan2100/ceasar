@@ -55,23 +55,9 @@ int init()
     return 0;
 }
 
-
 static std::map<int, ServoConfig> servo_configs;
 int config(std::map<int, ServoConfig> _servo_config)
 {
-    // int n = 0;
-    // for (std::map<int, servocontrol::ServoConfig>::iterator
-	// 		 iter = _servo_config.begin();
-	// 	 iter != _servo_config.end();
-	// 	 ++iter)
-	// {
-    //     ServoConfig s = iter->second;
-    //     servo_channel[n] = _servo_config.;
-    //     n++;
-    // }
-    // ESP_LOGI(tag, "Servo controller configured with %d servos", n);
-
-//TODO: redundant configuration as motion cmd sends them all the time anyway
     servo_configs = _servo_config;
     ESP_LOGI(tag, "Servo controller configured");
     for (std::map<int, ServoConfig>::iterator
@@ -93,20 +79,8 @@ int config(std::map<int, ServoConfig> _servo_config)
     return 0;
 }
 
-#if 0
-static esp_err_t set_servo(uint8_t id, uint16_t angle) {
-  esp_err_t ret;
-  uint16_t pulse = (uint16_t) (0.5 + servo_min[id] + (angle * servo_conversion[id]));
-  ESP_LOGD(tag, "setPWM of servo %d, %d degrees -> Pulse %d", id, angle, pulse);
-  ret = setPWM(pwm_channel[id], 0, pulse);
-
-  if (ret == ESP_OK) return ESP_OK;
-  else return ESP_FAIL;
-}
-#endif // 0
-
 /**
- * \private method to set a value for a PWM channel on the active board
+ * @brief method to set a value for a PWM channel on the active board
  *
  *The pulse defined by start/stop will be active on the specified servo channel until any subsequent call changes it.
  *@param servo an int value (1..16) indicating which channel to change power
@@ -144,7 +118,7 @@ void servos_absolute (ServoArray& servos)
  *@param value an int value (±1.0) indicating when the size of the pulse for the channel.
  *Example _set_pwm_interval (3, 0, 350)    // set servo #3 (fourth position on the hardware board) with a pulse of 350
  */
-static void _set_pwm_interval_proportional (int servo, float value)
+void servos_proportional (int servo, float value)
 {
 	// need a little wiggle room to allow for accuracy of a floating point value
 	if ((value < -1.0001) || (value > 1.0001)) {
@@ -152,7 +126,6 @@ static void _set_pwm_interval_proportional (int servo, float value)
 		return;
 	}
 
-	// ServoConfig* configp = &(servo_configs[servo-1]);
     ServoConfig* configp = &(servo_configs[servo]);
 	
 	if ((configp->center < 0) ||(configp->range < 0)) {
@@ -169,14 +142,9 @@ static void _set_pwm_interval_proportional (int servo, float value)
 
     setPWM(servo-1, 0, pos);
     
-	ESP_LOGI(tag, "servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", 
+    if(servo == 10 || servo == 7 || servo == 4 || servo == 1)
+	    ESP_LOGI(tag, "servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", 
             servo, configp->direction, configp->range, value, configp->center, pos);
-}
-
-void servos_proportional(int servo, float value)
-{
-    //FIXME: corruption the GAIT stack somehow
-    _set_pwm_interval_proportional (servo, value);
 }
 
 }
