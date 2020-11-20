@@ -40,7 +40,7 @@ SpotMicroMotionCmd::SpotMicroMotionCmd()
 		servocontrol::Servo temp_servo;
 		temp_servo.servo = i;
 		temp_servo.value = 0;
-		servo_array_[i] = temp_servo;
+		servo_array_.push_back(temp_servo);
 	}
 
 	// Initialize servo array absolute message with 12 servo object with a value of
@@ -83,7 +83,7 @@ void SpotMicroMotionCmd::readInConfigParameters()
 	smnc_.dt = 0.02; //# 50hz
 
 	smnc_.debug_mode = DEBUG_MODE;
-	smnc_.plot_mode = false; //FIXME
+	smnc_.plot_mode = false;
 
 	// # Gait parameters
 	smnc_.max_fwd_velocity = 0.4;
@@ -116,18 +116,18 @@ void SpotMicroMotionCmd::readInConfigParameters()
 	smnc_.phase_length = smnc_.num_phases * smnc_.swing_ticks;
 
 	// load servo config map
-	smnc_.servo_config["RF_3"] = {{"num", 10}, {"center", 306}, {"range", 385}, {"direction", 1}, {"center_angle_deg", 84.0f}};
-	smnc_.servo_config["RF_2"] = {{"num", 9}, {"center", 306}, {"range", 385}, {"direction", 1}, {"center_angle_deg", -27.9f}};
-	smnc_.servo_config["RF_1"] = {{"num", 8}, {"center", 306}, {"range", 396}, {"direction", -1}, {"center_angle_deg", -5.4f}};
-	smnc_.servo_config["RB_3"] = {{"num", 2}, {"center", 306}, {"range", 394}, {"direction", 1}, {"center_angle_deg", 90.4f}};
-	smnc_.servo_config["RB_2"] = {{"num", 1}, {"center", 306}, {"range", 396}, {"direction", 1}, {"center_angle_deg", -35.2f}};
-	smnc_.servo_config["RB_1"] = {{"num", 0}, {"center", 306}, {"range", 410}, {"direction", 1}, {"center_angle_deg", -4.4f}};
-	smnc_.servo_config["LB_3"] = {{"num", 6}, {"center", 306}, {"range", 390}, {"direction", 1}, {"center_angle_deg", -84.1f}};
-	smnc_.servo_config["LB_2"] = {{"num", 5}, {"center", 306}, {"range", 392}, {"direction", 1}, {"center_angle_deg", 37.4f}};
-	smnc_.servo_config["LB_1"] = {{"num", 4}, {"center", 306}, {"range", 374}, {"direction", -1}, {"center_angle_deg", -0.4f}};
-	smnc_.servo_config["LF_3"] = {{"num", 14}, {"center", 306}, {"range", 394}, {"direction", 1}, {"center_angle_deg", -80.0f}};
-	smnc_.servo_config["LF_2"] = {{"num", 13}, {"center", 306}, {"range", 392}, {"direction", 1}, {"center_angle_deg", 37.9f}};
-	smnc_.servo_config["LF_1"] = {{"num", 12}, {"center", 306}, {"range", 403}, {"direction", 1}, {"center_angle_deg", -9.0f}};
+	smnc_.servo_config["RF_3"] = {{"num", 9}, {"center", 306}, {"range", 385}, {"direction", 1}, {"center_angle_deg", 99.86f}};
+	smnc_.servo_config["RF_2"] = {{"num", 8}, {"center", 306}, {"range", 407}, {"direction", 1}, {"center_angle_deg", -31.62f}};
+	smnc_.servo_config["RF_1"] = {{"num", 7}, {"center", 306}, {"range", 396}, {"direction", -1}, {"center_angle_deg", 1.67f}};
+	smnc_.servo_config["RB_3"] = {{"num", 3}, {"center", 306}, {"range", 369}, {"direction", 1}, {"center_angle_deg", 95.37f}};
+	smnc_.servo_config["RB_2"] = {{"num", 2}, {"center", 306}, {"range", 381}, {"direction", 1}, {"center_angle_deg", -37.21f}};
+	smnc_.servo_config["RB_1"] = {{"num", 1}, {"center", 306}, {"range", 403}, {"direction", 1}, {"center_angle_deg", -3.27f}};
+	smnc_.servo_config["LB_3"] = {{"num", 6}, {"center", 306}, {"range", 374}, {"direction", 1}, {"center_angle_deg", -92.65f}};
+	smnc_.servo_config["LB_2"] = {{"num", 5}, {"center", 306}, {"range", 403}, {"direction", 1}, {"center_angle_deg", 91.23f}};
+	smnc_.servo_config["LB_1"] = {{"num", 4}, {"center", 306}, {"range", 367}, {"direction", -1}, {"center_angle_deg",-7.20f}};
+	smnc_.servo_config["LF_3"] = {{"num", 12}, {"center", 306}, {"range", 385}, {"direction", 1}, {"center_angle_deg", -87.43f}};
+	smnc_.servo_config["LF_2"] = {{"num", 11}, {"center", 306}, {"range", 388}, {"direction", 1}, {"center_angle_deg", 38.21f}};
+	smnc_.servo_config["LF_1"] = {{"num", 10}, {"center", 306}, {"range", 388}, {"direction", 1}, {"center_angle_deg", 4.67f}};
 }
 
 bool SpotMicroMotionCmd::init()
@@ -192,11 +192,6 @@ LegsFootPos SpotMicroMotionCmd::getLieDownStance()
 	lie_down_stance.left_back = {.x = -len / 2 + x_off, .y = 0.0f, .z = -width / 2 - l1};
 
 	return lie_down_stance;
-}
-
-void SpotMicroMotionCmd::publishZeroServoAbsoluteCommand()
-{
-	servocontrol::servos_absolute(servo_array_absolute_);
 }
 
 void SpotMicroMotionCmd::changeState(std::unique_ptr<SpotMicroState> sms)
@@ -271,8 +266,16 @@ void SpotMicroMotionCmd::publishServoProportionalCommand()
 		servo_array_[servo_num - 1].servo = servo_num;
 		servo_array_[servo_num - 1].value = servo_proportional_cmd;
 
-		servocontrol::servos_proportional(servo_array_);
+		// ESP_LOGI(tag, "prop servo: %d - %f", servo_num, servo_proportional_cmd);
+		servocontrol::servos_proportional(servo_num, servo_proportional_cmd);
 	}
+
+	// while(1);
+}
+
+void SpotMicroMotionCmd::publishZeroServoAbsoluteCommand()
+{
+	servocontrol::servos_absolute(servo_array_absolute_);
 }
 
 void SpotMicroMotionCmd::command_stand()

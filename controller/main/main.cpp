@@ -11,7 +11,7 @@
 #include <esp_log.h>
 static char tag[] = "ceasar";
 
-void task_controller(void *ignore)
+void control_loop(void *ignore)
 {
     ESP_LOGI(tag, "Locking to CPU: %d", xPortGetCoreID());
 
@@ -25,31 +25,58 @@ void task_controller(void *ignore)
         return;
     }
 
-    bool test_initiated = false;
+    //TODO: optimize with vTaskDelayUntil
+    // task frequency to match GAIT update frequency
+    float dt = 0.02f; //motion.getNodeConfig().dt; //FIXME: crashing somehow
+    TickType_t xDelay = pdMS_TO_TICKS((int)(dt * 1000.0f));
+#define SIMULATED_COMMANDS
+#ifdef SIMULATED_COMMANDS
+    bool test_stand_initiated = false;
+    bool test_walk_initiated = false;
     struct timeval start_time;
     gettimeofday(&start_time, NULL);
+
+#endif // SIMULATED_COMMANDS
 
     // Controller loop
     while(1)
     {
         motion.runOnce();
-        
+
         //TODO: establish the loop rate
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(xDelay);
+
 
         // simulate commands for tests
+#ifdef SIMULATED_COMMANDS
         //TODO: use push button instead
-        if(!test_initiated)
+        if(!test_stand_initiated)
         {
             struct timeval current_time;
             gettimeofday(&current_time, NULL);
-            if((current_time.tv_sec - start_time.tv_sec) >= 5)
+            if((current_time.tv_sec - start_time.tv_sec) >= 1)
             {
                 motion.command_stand();
-                test_initiated = true;
+                test_stand_initiated = true;
+                gettimeofday(&start_time, NULL);
+                ESP_LOGI(tag, " >>> STAND");
             }
         }
 
+        //FIXME: causing stack overflows
+        if(test_stand_initiated & !test_walk_initiated)
+        {
+            struct timeval current_time;
+            gettimeofday(&current_time, NULL);
+            if((current_time.tv_sec - start_time.tv_sec) >= 3)
+            {
+                motion.command_walk();
+                test_walk_initiated = true;
+                gettimeofday(&start_time, NULL);
+                ESP_LOGI(tag, " >>> WALK");
+            }
+        }
+#endif // SIMULATED_COMMANDS
     }
     vTaskDelete(NULL);
 }
@@ -68,5 +95,5 @@ extern "C" void app_main()
     servocontrol::init();
     comms::init();
 
-    xTaskCreate(task_controller, "task_controller", 1025 * 2, (void* ) 0, 10, NULL);
+    xTaskCreate(control_loop, "controller", 1025 * 2, (void* ) 0, 10, NULL);
 }

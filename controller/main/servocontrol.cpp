@@ -61,10 +61,41 @@ int init()
     return 0;
 }
 
-int config(std::map<int, ServoConfig> servo_config)
+
+static std::map<int, ServoConfig> servo_configs;
+int config(std::map<int, ServoConfig> _servo_config)
 {
+    // int n = 0;
+    // for (std::map<int, servocontrol::ServoConfig>::iterator
+	// 		 iter = _servo_config.begin();
+	// 	 iter != _servo_config.end();
+	// 	 ++iter)
+	// {
+    //     ServoConfig s = iter->second;
+    //     servo_channel[n] = _servo_config.;
+    //     n++;
+    // }
+    // ESP_LOGI(tag, "Servo controller configured with %d servos", n);
+
+//TODO: redundant configuration as motion cmd sends them all the time anyway
+    servo_configs = _servo_config;
     ESP_LOGI(tag, "Servo controller configured");
-    //TODO: cache the config
+    for (std::map<int, ServoConfig>::iterator
+		    iter = servo_configs.begin();
+		    iter != servo_configs.end();
+		    ++iter)
+	{
+        int servo_name = iter->first;
+		ServoConfig servo_config_params = iter->second;
+
+		ESP_LOGI(tag, "Servo[%d]: channel: %d center: %d range: %d direction: %d", 
+                        servo_name,
+                        servo_config_params.servo-1,
+                        servo_config_params.center,
+                        servo_config_params.range,
+                        servo_config_params.direction);
+    }
+
     return 0;
 }
 
@@ -80,13 +111,74 @@ static esp_err_t set_servo(uint8_t id, uint16_t angle) {
 }
 #endif // 0
 
-void servos_absolute (const ServoArray servos)
+/**
+ * \private method to set a value for a PWM channel on the active board
+ *
+ *The pulse defined by start/stop will be active on the specified servo channel until any subsequent call changes it.
+ *@param servo an int value (1..16) indicating which channel to change power
+ *@param start an int value (0..4096) indicating when the pulse will go high sending power to each channel.
+ *@param end an int value (0..4096) indicating when the pulse will go low stoping power to each channel.
+ *Example _set_pwm_interval (3, 0, 350)    // set servo #3 (fourth position on the hardware board) with a pulse of 350
+ */
+static void _set_pwm_interval (int servo, int start, int end)
 {
-    //TODO: command PCA9685
+	// ESP_LOGI(tag, "servo[%d] = %d", servo, end);
+
+    // if ((servo<1) || (servo>(MAX_SERVOS))) {
+    //     ROS_ERROR("Invalid servo number %d :: servo numbers must be between 1 and %d", servo, MAX_BOARDS);
+    //     return;
+    // }
+    setPWM(servo, start, end);
 }
 
-void servos_proportional (const ServoArray servos)
+void servos_absolute (ServoArray& servos)
 {
-    //TODO: command PCA9685
+    // TODO: command PCA9685
+    for(std::vector<Servo>::const_iterator sp = servos.begin(); sp != servos.end(); ++sp)
+    {
+        int servo = sp->servo;
+        int value = sp->value;
+        _set_pwm_interval (servo, 0, value);
+    }
 }
+
+/**
+ * @brief method to set a value for a PWM channel, based on a range of ±1.0, on the active board
+ *
+ *The pulse defined by start/stop will be active on the specified servo channel until any subsequent call changes it.
+ *@param servo an int value (1..16) indicating which channel to change power
+ *@param value an int value (±1.0) indicating when the size of the pulse for the channel.
+ *Example _set_pwm_interval (3, 0, 350)    // set servo #3 (fourth position on the hardware board) with a pulse of 350
+ */
+static void _set_pwm_interval_proportional (int servo, float value)
+{
+	// need a little wiggle room to allow for accuracy of a floating point value
+	if ((value < -1.0001) || (value > 1.0001)) {
+		ESP_LOGE(tag, "Invalid proportion value %f :: proportion values must be between -1.0 and 1.0", value);
+		return;
+	}
+
+	// ServoConfig* configp = &(servo_configs[servo-1]);
+    ServoConfig* configp = &(servo_configs[servo]);
+	
+	if ((configp->center < 0) ||(configp->range < 0)) {
+		ESP_LOGE(tag, "Missing servo configuration for servo[%d]", servo);
+		return;
+	}
+
+	int pos = (configp->direction * (((float)(configp->range) / 2) * value)) + configp->center;
+        
+	if ((pos < 0) || (pos > 4096)) {
+		ESP_LOGE(tag, "Invalid computed position servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", servo, configp->direction, configp->range, value, configp->center, pos);
+		return;
+	}
+    _set_pwm_interval (servo-1, 0, pos);
+	// ESP_LOGI(tag, "servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", servo, configp->direction, configp->range, value, configp->center, pos);
+}
+
+void servos_proportional(int servo, float value)
+{
+    _set_pwm_interval_proportional (servo, value);
+}
+
 }

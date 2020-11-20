@@ -1,4 +1,5 @@
 #define DEBUG_MODE  true
+
 // #define BLUETOOTH_ENABLED
 
 // I2C configuration

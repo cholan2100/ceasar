@@ -3,6 +3,7 @@
 #define I2CPWM_CONTROLLER
 
 #include <map>
+#include <vector>
 
 namespace servocontrol
 {
@@ -11,20 +12,18 @@ namespace servocontrol
         int value;
     } Servo;
 
-    typedef std::map<int, Servo> ServoArray;
+    typedef std::vector<Servo> ServoArray;
 
     typedef struct _servo_config {
         int servo;
         int center;
         int range;
         int direction;
-        int mode_pos;
     } ServoConfig;
 
     int init();
-    int config(std::map<int, ServoConfig> servo_config);
-    void servos_absolute (const ServoArray servos);
-    void servos_proportional (const ServoArray servos);
-};
-
+    int config(std::map<int, ServoConfig> _servo_config);
+    void servos_absolute(ServoArray& servos_pos);
+    void servos_proportional(int servo, float value);
+}
 #endif // I2CPWM_CONTROLLER
