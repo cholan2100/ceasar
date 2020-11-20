@@ -40,12 +40,8 @@ SpotMicroMotionCmd::SpotMicroMotionCmd()
 		servocontrol::Servo temp_servo;
 		temp_servo.servo = i;
 		temp_servo.value = 0;
-		servo_array_.push_back(temp_servo);
+		servo_array_absolute_.push_back(temp_servo);
 	}
-
-	// Initialize servo array absolute message with 12 servo object with a value of
-	// zero, just copy servo_array_msg since it's already correct
-	servo_array_absolute_ = servo_array_;
 }
 
 SpotMicroMotionCmd::~SpotMicroMotionCmd()
@@ -235,6 +231,11 @@ void SpotMicroMotionCmd::setServoCommandMessageData()
 
 void SpotMicroMotionCmd::publishServoProportionalCommand()
 {
+	int servo_num;
+	float cmd_ang_rad;
+	float center_ang_rad;
+	float servo_proportional_cmd;
+
 	for (std::map<std::string, std::map<std::string, float>>::iterator
 			 iter = smnc_.servo_config.begin();
 		 iter != smnc_.servo_config.end();
@@ -244,29 +245,38 @@ void SpotMicroMotionCmd::publishServoProportionalCommand()
 		std::string servo_name = iter->first;
 		std::map<std::string, float> servo_config_params = iter->second;
 
-		int servo_num = servo_config_params["num"];
-		float cmd_ang_rad = servo_cmds_rad_[servo_name];
-		float center_ang_rad = servo_config_params["center_angle_deg"] * M_PI / 180.0f;
-		float servo_proportional_cmd = (cmd_ang_rad - center_ang_rad) /
+		servo_num = servo_config_params["num"];
+		cmd_ang_rad = servo_cmds_rad_[servo_name];
+		center_ang_rad = servo_config_params["center_angle_deg"] * M_PI / 180.0f;
+		servo_proportional_cmd = (cmd_ang_rad - center_ang_rad) /
 									   (smnc_.servo_max_angle_deg * M_PI / 180.0f);
 
 		if (servo_proportional_cmd > 1.0f)
 		{
 			servo_proportional_cmd = 1.0f;
-			ESP_LOGW(tag, "Proportional Command above +1.0 was computed, clipped to 1.0");
-			ESP_LOGW(tag, "Joint %s, Angle: %1.2f", servo_name.c_str(), cmd_ang_rad * 180.0 / M_PI);
+			// ESP_LOGW(tag, "Proportional Command above +1.0 was computed, clipped to 1.0");
+			// ESP_LOGW(tag, "Joint %s, Angle: %1.2f", servo_name.c_str(), cmd_ang_rad * 180.0 / M_PI);
 		}
 		else if (servo_proportional_cmd < -1.0f)
 		{
 			servo_proportional_cmd = -1.0f;
-			ESP_LOGW(tag, "Proportional Command below -1.0 was computed, clipped to -1.0");
-			ESP_LOGW(tag, "Joint %s, Angle: %1.2f", servo_name.c_str(), cmd_ang_rad * 180.0 / M_PI);
+			// ESP_LOGW(tag, "Proportional Command below -1.0 was computed, clipped to -1.0");
+			// ESP_LOGW(tag, "Joint %s, Angle: %1.2f", servo_name.c_str(), cmd_ang_rad * 180.0 / M_PI);
 		}
 
-		servo_array_[servo_num - 1].servo = servo_num;
-		servo_array_[servo_num - 1].value = servo_proportional_cmd;
+		//FIXME: angles causing crooked legs.
+		// if(servo_num == 10)
+		// 	continue;
+		// if(servo_num == 7)
+		// 	continue;
+		// if(servo_num == 4)
+		// 	continue;
+		// if(servo_num == 1)
+		// 	continue;
 
-		// ESP_LOGI(tag, "prop servo: %d - %f", servo_num, servo_proportional_cmd);
+		// if(servo_num == 10)
+			// ESP_LOGI(tag, "prop servo: %d - %f", servo_num, servo_proportional_cmd);
+		
 		servocontrol::servos_proportional(servo_num, servo_proportional_cmd);
 	}
 
@@ -313,4 +323,6 @@ void SpotMicroMotionCmd::runOnce()
 
 	// Consume all event commands.
 	cmd_.resetEventCmds(); 
+
+	publishServoProportionalCommand(); // hack to avoid stack overflow
 }

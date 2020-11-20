@@ -61,7 +61,7 @@ void SpotMicroStandState::handleInputCommands(const smk::BodyState& body_state,
 
     // Set and publish command
     smmc->setServoCommandMessageData();
-    smmc->publishServoProportionalCommand();
+    // smmc->publishServoProportionalCommand();
   }
 }
 

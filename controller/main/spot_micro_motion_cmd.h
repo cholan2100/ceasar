@@ -122,8 +122,6 @@ private:
 	// struct
 	void readInConfigParameters();
 
-	// Servo array message for servo proportional command
-	servocontrol::ServoArray servo_array_;
 	// Servo array message for servo absolute command
 	servocontrol::ServoArray servo_array_absolute_;
 

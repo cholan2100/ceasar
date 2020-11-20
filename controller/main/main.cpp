@@ -35,13 +35,17 @@ void control_loop(void *ignore)
     bool test_walk_initiated = false;
     struct timeval start_time;
     gettimeofday(&start_time, NULL);
-
 #endif // SIMULATED_COMMANDS
+
+    // struct timeval prof_start;
+    // struct timeval prof_end;
 
     // Controller loop
     while(1)
     {
+        // ESP_LOGI(tag, "begin");
         motion.runOnce();
+        // ESP_LOGI(tag, "----end");
 
         //TODO: establish the loop rate
         vTaskDelay(xDelay);
@@ -68,7 +72,7 @@ void control_loop(void *ignore)
         {
             struct timeval current_time;
             gettimeofday(&current_time, NULL);
-            if((current_time.tv_sec - start_time.tv_sec) >= 3)
+            if((current_time.tv_sec - start_time.tv_sec) >= 10)
             {
                 motion.command_walk();
                 test_walk_initiated = true;

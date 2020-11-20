@@ -15,12 +15,6 @@ namespace servocontrol
 #define I2C_MASTER_TX_BUF_DISABLE   0   /*!< I2C master do not need buffer */
 #define I2C_MASTER_RX_BUF_DISABLE   0   /*!< I2C master do not need buffer */
 
-
-#define ACK_CHECK_EN    0x1     /*!< I2C master will check ack from slave */
-#define ACK_CHECK_DIS   0x0     /*!< I2C master will not check ack from slave */
-#define ACK_VAL         0x0     /*!< I2C ack value */
-#define NACK_VAL        0x1     /*!< I2C nack value */
-
 /**
  * @brief i2c master initialization
  */
@@ -172,12 +166,15 @@ static void _set_pwm_interval_proportional (int servo, float value)
 		ESP_LOGE(tag, "Invalid computed position servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", servo, configp->direction, configp->range, value, configp->center, pos);
 		return;
 	}
-    _set_pwm_interval (servo-1, 0, pos);
+
+    setPWM(servo-1, 0, pos);
+    
 	// ESP_LOGI(tag, "servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", servo, configp->direction, configp->range, value, configp->center, pos);
 }
 
 void servos_proportional(int servo, float value)
 {
+    //FIXME: corruption the GAIT stack somehow
     _set_pwm_interval_proportional (servo, value);
 }
 

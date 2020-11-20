@@ -53,7 +53,7 @@ void SpotMicroWalkState::handleInputCommands(const smk::BodyState& body_state,
     
     // Set servo data and publish command
     smmc->setServoCommandMessageData();
-    smmc->publishServoProportionalCommand();
+    // smmc->publishServoProportionalCommand();
 
     // Increment ticks
     ticks_ += 1;
