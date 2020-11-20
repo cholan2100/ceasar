@@ -1,14 +1,15 @@
 #include "spot_micro_walk.h"
 #ifndef ESP_PLATFORM
 #include <eigen3/Eigen/Geometry>
+#else
+#include "esp_dsp.h"
+#include <esp_log.h>
+static char tag[] = "walk";
 #endif // ESP_PLATFORM
 
 #include "spot_micro_transition_stand.h"
 #include "../spot_micro_motion_cmd.h"
 #include "rate_limited_first_order_filter.h"
-
-#include <esp_log.h>
-static char tag[] = "walk";
 
 SpotMicroWalkState::SpotMicroWalkState() {
   contact_feet_states_.right_back_in_swing = false;
@@ -53,7 +54,7 @@ void SpotMicroWalkState::handleInputCommands(const smk::BodyState& body_state,
     
     // Set servo data and publish command
     smmc->setServoCommandMessageData();
-    // smmc->publishServoProportionalCommand();
+    smmc->publishServoProportionalCommand();
 
     // Increment ticks
     ticks_ += 1;
@@ -195,12 +196,12 @@ smk::Point SpotMicroWalkState::stanceController(
   // Declare return value
   smk::Point new_foot_pos = {0.0f,0.0f,0.0f};
 
-#ifndef ESP_PLATFORM
-  using namespace Eigen;
-
   // Convenience variables
   float dt = smnc.dt;
   float h_tau = smnc.foot_height_time_constant;
+
+#ifndef ESP_PLATFORM
+  using namespace Eigen;
 
   // Calculate position deltas due to speed and rotation commands
   // Create vector to hold current foot position
@@ -221,14 +222,39 @@ smk::Point SpotMicroWalkState::stanceController(
 
   // Move foot by rotation and linear translation deltas
   new_foot_pos_vec = (rot_delta * foot_pos_vec) + delta_pos;
+#else // ESP_PLATFORM
+  // Calculate position deltas due to speed and rotation commands
+  // Create vector to hold current foot position
+  float foot_pos_vec[3] = {foot_pos.x, foot_pos.y, foot_pos.z};
+  float new_foot_pos_vec[3];
+
+  // Create delta position vector, which is the commanded velocity times the
+  // timestep. Note that y speed command is really sideways velocity command, which 
+  // is in the z direction of robot coordinate system. Stance foot position hard
+  // coded to 0 height here in second equation
+  float delta_pos[3] = {-cmd.getXSpeedCmd() * dt,
+                     (1.0f/h_tau)*(0.0f - foot_pos.y) * dt,
+                     -cmd.getYSpeedCmd() * dt};
+
+  // Create rotation matrix for yaw rate
+  float yaw_cmd = cmd.getYawRateCmd() * dt;
+  float cos_y_ang   = cos(yaw_cmd); float sin_y_ang   = sin(yaw_cmd);
+  float rot_delta[3][3] = {
+                          {cos_y_ang, 0.0f, sin_y_ang},
+                          {0.0f, 1.0f, 0.0f},
+                          {-sin_y_ang, 0.0f, cos_y_ang}
+                          };
+
+  // Move foot by rotation and linear translation deltas
+  float Rxyz[3];
+  dspm_mult_f32_ae32((float*) rot_delta, (float*) foot_pos_vec, (float*) Rxyz, 3, 3, 1);
+  dsps_add_f32_ae32((float*) Rxyz, (float*) delta_pos, (float*) new_foot_pos_vec, 9, 1, 1, 1);
+#endif // ESP_PLATFORM
 
   // Assign values to return structure
   new_foot_pos.x = new_foot_pos_vec[0];
   new_foot_pos.y = new_foot_pos_vec[1];
   new_foot_pos.z = new_foot_pos_vec[2];
-#else // ESP_PLATFORM
-  //TODO:
-#endif // ESP_PLATFORM
 
   // Return value
   return new_foot_pos;
@@ -243,8 +269,6 @@ smk::Point SpotMicroWalkState::swingLegController(
   
   // declare return value
   smk::Point new_foot_pos = {0.0f,0.0f,0.0f};
-#ifndef ESP_PLATFORM
-  using namespace Eigen;
 
   // Convenience variables
   float dt = smnc.dt;
@@ -253,9 +277,8 @@ smk::Point SpotMicroWalkState::swingLegController(
   float alpha = smnc.alpha;
   float beta = smnc.beta;
   float stance_ticks = smnc.stance_ticks;
-  Vector3f default_stance_foot_pos_vec(default_stance_foot_pos.x,
-                                       default_stance_foot_pos.y,
-                                       default_stance_foot_pos.z);
+  float theta = beta * stance_ticks * dt * -cmd.getYawRateCmd();
+  float time_left = dt * smnc.swing_ticks * (1.0f - swing_proportion);
 
   // Calculate swing height based on triangular profile
   if (swing_proportion < 0.5f) {
@@ -264,6 +287,12 @@ smk::Point SpotMicroWalkState::swingLegController(
     swing_height = smnc.z_clearance * (1.0f - (swing_proportion - 0.5f) / 0.5f);
   }
 
+#ifndef ESP_PLATFORM
+  using namespace Eigen;
+  
+  Vector3f default_stance_foot_pos_vec(default_stance_foot_pos.x,
+                                       default_stance_foot_pos.y,
+                                       default_stance_foot_pos.z);
 
   // Calculate position deltas due to speed and rotation commands
   // Create vector to hold current foot position
@@ -276,27 +305,55 @@ smk::Point SpotMicroWalkState::swingLegController(
                      alpha * stance_ticks * dt * cmd.getYSpeedCmd());
 
   // Create rotation matrix for yaw rate
-  float theta = beta * stance_ticks * dt * -cmd.getYawRateCmd();
   Matrix3f rot_delta;
   rot_delta = AngleAxisf(theta, Vector3f::UnitY());
 
   // Calculate touchdown location
   Vector3f touchdown_location = (rot_delta * default_stance_foot_pos_vec) + delta_pos;
 
-  float time_left = dt * smnc.swing_ticks * (1.0f - swing_proportion);
-
   Vector3f delta_pos2 = ((touchdown_location - foot_pos_vec) / time_left) * dt;
 
   new_foot_pos_vec = foot_pos_vec + delta_pos2;
+#else // ESP_PLATFORM
+  float default_stance_foot_pos_vec[3] = {default_stance_foot_pos.x,
+                                       default_stance_foot_pos.y,
+                                       default_stance_foot_pos.z};
+  
+  float foot_pos_vec[3] = {foot_pos.x, foot_pos.y, foot_pos.z};
+  float new_foot_pos_vec[3];
+
+  float delta_pos[3] = {alpha * stance_ticks * dt * cmd.getXSpeedCmd(),
+                        0.0f, 
+                        alpha * stance_ticks * dt * cmd.getYSpeedCmd()};
+
+  // Create rotation matrix for yaw rate
+  float cos_y_ang   = cos(theta); float sin_y_ang   = sin(theta);
+  float rot_delta[3][3] = {
+                          {cos_y_ang, 0.0f, sin_y_ang},
+                          {0.0f, 1.0f, 0.0f},
+                          {-sin_y_ang, 0.0f, cos_y_ang}
+                          };
+
+  // Calculate touchdown location
+  float Rxyz[3];
+  dspm_mult_f32_ae32((float*) rot_delta, (float*) default_stance_foot_pos_vec, (float*) Rxyz, 3, 3, 1);
+  float touchdown_location[3];
+  dsps_add_f32_ae32((float*) Rxyz, (float*) delta_pos, (float*) touchdown_location, 9, 1, 1, 1);
+
+  float delta_pos2[3] = { ( (touchdown_location[0] - foot_pos_vec[0]) / time_left) * dt,
+                          ( (touchdown_location[1] - foot_pos_vec[1]) / time_left) * dt,
+                          ( (touchdown_location[2] - foot_pos_vec[2]) / time_left) * dt,
+                        };
+
+  dsps_add_f32_ae32((float*) foot_pos_vec, (float*) delta_pos2, (float*) new_foot_pos_vec, 3, 1, 1, 1);
+#endif // ESP_PLATFORM
+
   new_foot_pos_vec[1] = swing_height;
   
   // Assign values to return structure
   new_foot_pos.x = new_foot_pos_vec[0];
   new_foot_pos.y = new_foot_pos_vec[1];
   new_foot_pos.z = new_foot_pos_vec[2];
-#else // ESP_PLATFORM
-  //TODO:
-#endif // ESP_PLATFORM
 
   // Return value
   return new_foot_pos;

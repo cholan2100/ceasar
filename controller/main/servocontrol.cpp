@@ -142,8 +142,8 @@ void servos_proportional (int servo, float value)
 
     setPWM(servo-1, 0, pos);
     
-    if(servo == 10 || servo == 7 || servo == 4 || servo == 1)
-	    ESP_LOGI(tag, "servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", 
+    // if(servo == 10 || servo == 7 || servo == 4 || servo == 1)
+	    ESP_LOGD(tag, "servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", 
             servo, configp->direction, configp->range, value, configp->center, pos);
 }
 

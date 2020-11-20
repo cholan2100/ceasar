@@ -270,7 +270,7 @@ void SpotMicroMotionCmd::runOnce()
 	// Consume all event commands.
 	cmd_.resetEventCmds(); 
 
-	publishServoProportionalCommand(); // hack to avoid stack overflow
+	// publishServoProportionalCommand(); // hack to avoid stack overflow
 }
 
 void SpotMicroMotionCmd::publishServoProportionalCommand()
@@ -298,14 +298,14 @@ void SpotMicroMotionCmd::publishServoProportionalCommand()
 		if (servo_proportional_cmd > 1.0f)
 		{
 			servo_proportional_cmd = 1.0f;
-			ESP_LOGW(tag, "Proportional Command above +1.0 was computed, clipped to 1.0");
-			ESP_LOGW(tag, "Joint %s, Angle: %1.2f", servo_name.c_str(), cmd_ang_rad * 180.0 / M_PI);
+			ESP_LOGD(tag, "Proportional Command above +1.0 was computed, clipped to 1.0");
+			ESP_LOGD(tag, "Joint %s, Angle: %1.2f", servo_name.c_str(), cmd_ang_rad * 180.0 / M_PI);
 		}
 		else if (servo_proportional_cmd < -1.0f)
 		{
 			servo_proportional_cmd = -1.0f;
-			ESP_LOGW(tag, "Proportional Command below -1.0 was computed, clipped to -1.0");
-			ESP_LOGW(tag, "Joint %s, Angle: %1.2f", servo_name.c_str(), cmd_ang_rad * 180.0 / M_PI);
+			ESP_LOGD(tag, "Proportional Command below -1.0 was computed, clipped to -1.0");
+			ESP_LOGD(tag, "Joint %s, Angle: %1.2f", servo_name.c_str(), cmd_ang_rad * 180.0 / M_PI);
 		}
 
 		//FIXME: angles causing crooked legs.
