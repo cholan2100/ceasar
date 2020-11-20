@@ -320,7 +320,7 @@ smk::Point SpotMicroWalkState::swingLegController(
                                        default_stance_foot_pos.z};
   
   float foot_pos_vec[3] = {foot_pos.x, foot_pos.y, foot_pos.z};
-  float new_foot_pos_vec[3];
+  float new_foot_pos_vec[3] = {0,};
 
   float delta_pos[3] = {alpha * stance_ticks * dt * cmd.getXSpeedCmd(),
                         0.0f, 
@@ -335,10 +335,10 @@ smk::Point SpotMicroWalkState::swingLegController(
                           };
 
   // Calculate touchdown location
-  float Rxyz[3];
+  float Rxyz[3] = {0,};
   dspm_mult_f32_ae32((float*) rot_delta, (float*) default_stance_foot_pos_vec, (float*) Rxyz, 3, 3, 1);
   float touchdown_location[3];
-  dsps_add_f32_ae32((float*) Rxyz, (float*) delta_pos, (float*) touchdown_location, 9, 1, 1, 1);
+  dsps_add_f32_ae32((float*) Rxyz, (float*) delta_pos, (float*) touchdown_location, 3, 1, 1, 1);
 
   float delta_pos2[3] = { ( (touchdown_location[0] - foot_pos_vec[0]) / time_left) * dt,
                           ( (touchdown_location[1] - foot_pos_vec[1]) / time_left) * dt,

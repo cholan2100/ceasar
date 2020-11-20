@@ -88,25 +88,14 @@ int config(std::map<int, ServoConfig> _servo_config)
  *@param end an int value (0..4096) indicating when the pulse will go low stoping power to each channel.
  *Example _set_pwm_interval (3, 0, 350)    // set servo #3 (fourth position on the hardware board) with a pulse of 350
  */
-static void _set_pwm_interval (int servo, int start, int end)
-{
-	// ESP_LOGI(tag, "servo[%d] = %d", servo, end);
-
-    // if ((servo<1) || (servo>(MAX_SERVOS))) {
-    //     ROS_ERROR("Invalid servo number %d :: servo numbers must be between 1 and %d", servo, MAX_BOARDS);
-    //     return;
-    // }
-    setPWM(servo, start, end);
-}
-
 void servos_absolute (ServoArray& servos)
 {
-    // TODO: command PCA9685
     for(std::vector<Servo>::const_iterator sp = servos.begin(); sp != servos.end(); ++sp)
     {
         int servo = sp->servo;
         int value = sp->value;
-        _set_pwm_interval (servo, 0, value);
+
+        setPWM(servo-1, 0, value);
     }
 }
 
@@ -142,9 +131,8 @@ void servos_proportional (int servo, float value)
 
     setPWM(servo-1, 0, pos);
     
-    // if(servo == 10 || servo == 7 || servo == 4 || servo == 1)
-	    ESP_LOGD(tag, "servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", 
-            servo, configp->direction, configp->range, value, configp->center, pos);
+    ESP_LOGD(tag, "servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", 
+        servo, configp->direction, configp->range, value, configp->center, pos);
 }
 
 }
