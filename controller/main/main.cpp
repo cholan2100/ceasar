@@ -99,5 +99,5 @@ extern "C" void app_main()
     servocontrol::init();
     comms::init();
 
-    xTaskCreate(control_loop, "controller", 1025 * 2, (void* ) 0, 10, NULL);
+    xTaskCreate(control_loop, "controller", 1024 * 32, (void* ) 0, 10, NULL);
 }

@@ -169,7 +169,8 @@ static void _set_pwm_interval_proportional (int servo, float value)
 
     setPWM(servo-1, 0, pos);
     
-	// ESP_LOGI(tag, "servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", servo, configp->direction, configp->range, value, configp->center, pos);
+	ESP_LOGI(tag, "servo[%d] = (direction(%d) * ((range(%d) / 2) * value(%6.4f))) + %d = %d", 
+            servo, configp->direction, configp->range, value, configp->center, pos);
 }
 
 void servos_proportional(int servo, float value)
