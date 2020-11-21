@@ -4,3 +4,7 @@
 [submodule "controller/components/esp-dsp"]
         path = controller/components/esp-dsp
         url = https://github.com/espressif/esp-dsp.git
+[submodule "hardware"]
+        path = hardware
+        url = https://github.com/michaelkubina/SpotMicroESP32.git
+        
