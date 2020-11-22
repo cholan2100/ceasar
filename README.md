@@ -17,11 +17,4 @@ Mike implemented the first version of software controller for original Spot Micr
 Mike's Spot Micro: https://github.com/mike4192/spotMicro
 
 
-## App
-Make sure to turn on Bluetooth and Location, and allow required permissions.
-Only been tested on Android
-[![App](img/app_ss.jpeg)]
-
-## STILL UNDER development
-
-##TODO: provide documentation references to Servo Calibration and configuration of the software controller build.
+## TODO: STILL UNDER development

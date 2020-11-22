@@ -27,12 +27,13 @@ void control_loop(void *ignore)
 
     //TODO: optimize with vTaskDelayUntil
     // task frequency to match GAIT update frequency
-    float dt = 0.02f; //motion.getNodeConfig().dt; //FIXME: crashing somehow
+    float dt = motion.getNodeConfig().dt;
     TickType_t xDelay = pdMS_TO_TICKS((int)(dt * 1000.0f));
 #define SIMULATED_COMMANDS
 #ifdef SIMULATED_COMMANDS
     bool test_stand_initiated = false;
     bool test_walk_initiated = false;
+    bool test_walkspeed_initiated = false;
     struct timeval start_time;
     gettimeofday(&start_time, NULL);
 #endif // SIMULATED_COMMANDS
@@ -53,7 +54,7 @@ void control_loop(void *ignore)
 
         // simulate commands for tests
 #ifdef SIMULATED_COMMANDS
-        //TODO: use push button instead
+        // initiate stand
         if(!test_stand_initiated)
         {
             struct timeval current_time;
@@ -67,7 +68,7 @@ void control_loop(void *ignore)
             }
         }
 
-        //FIXME: causing stack overflows
+        // initiate walk
         if(test_stand_initiated & !test_walk_initiated)
         {
             struct timeval current_time;
@@ -78,6 +79,21 @@ void control_loop(void *ignore)
                 test_walk_initiated = true;
                 gettimeofday(&start_time, NULL);
                 ESP_LOGI(tag, " >>> WALK");
+            }
+        }
+
+        // add walk speed
+        if(test_walk_initiated & !test_walkspeed_initiated)
+        {
+            struct timeval current_time;
+            gettimeofday(&current_time, NULL);
+            if((current_time.tv_sec - start_time.tv_sec) >= 3)
+            {
+                float speed = 0.06f;
+                motion.command_speed(speed, 0.0f, 0.0f); // forward speed
+                test_walkspeed_initiated = true;
+                gettimeofday(&start_time, NULL);
+                ESP_LOGI(tag, " >>> Forware Speed: %f m/s", speed);
             }
         }
 #endif // SIMULATED_COMMANDS

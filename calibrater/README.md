@@ -1,11 +1,11 @@
 # Calibration tool for Spot Micro ESP32
 Configure the servo angles using this tool before assembly.
 
-##IMPORTANT: 
+## IMPORTANT: 
 Do NOT use the controller software in the robot until you have completed the calibration setup. Else you risk breaking the robot parts and burning the robot servo motors and power supply circuits.
     
 
-##TODO: Tools for easy calibration is under development.
+## TODO: Tools for easy calibration is under development.
 
 Please use the manual calibration method explained in the following page.
 
