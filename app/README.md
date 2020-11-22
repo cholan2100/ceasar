@@ -13,4 +13,4 @@
 ## App
 Make sure to turn on Bluetooth and Location, and allow required permissions.
 Only been tested on Android
-[![App](img/app_ss.jpeg)]
+[![App](../assets/app_ss.jpeg)]
