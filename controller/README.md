@@ -118,62 +118,7 @@ NOTE: In future calibration tool(which is under development) will be able to pro
 #define LF_HIP_SERVO_DIRECTION 1
 #define LF_HIP_SERVO_CENTER_ANG_DEG 4.67f
 
-// Robot physcial characteristics in meters
-// IMPORTANT: DO NOT change any of these unless you are building you own robot model, and know exactly what you are doing!!!
-// Kinematics description
-#define HIP_LINK_LENGTH 0.0605
-#define UPPER_LEG_LINK_LENGTH 0.11126
-#define LOWER_LEG_LINK_LENGTH 0.1185 //TODO: include foot length
-#define BODY_WIDTH 0.078
-#define BODY_LENGTH 0.2075
-//# Control Parameters
-#define TRANSI_TAU 0.3
-#define TRANSIT_RL 0.06
-#define TRANSIT_ANGLE_RL 0.35
-
-// Stance parameters,
-//TODO: optimiize
-#define DEFAULT_STAND_HEIGHT 0.155
-#define STAND_FRONT_X_OFFSET 0.015
-#define STAND_BACL_X_OFFSET 0.0
-#define LIE_DOWN_HEIGHT 0.083
-#define LIE_DOWN_FEET_X_OFFSET 0.065
-
-// Gait configuration
-#define MAX_FWD_VELOCITY 0.1    // MG996R 0.1 m/s, 20kgcm servos = 0.4 m/s
-#define MAX_SIDE_VELOCITY 0.1   // MG996R 0.1 m/s, 20kgcm servos = 0.4 m/s
-#define MAX_YAW_RATE 0.1       // MG996R 0.1 m/s, 20kgcm servos = 0.35 m/s
-#define Z_CLEARANCE 0.045
-#define ALPHA 0.5
-#define BETA 0.5
-#define NUM_PHASES 8 // 8 phse Gait
-#define RB_CONTACT_PHASES      \
-    {                          \
-        1, 0, 1, 1, 1, 1, 1, 1 \
-    }
-#define RF_CONTACT_PHASES      \
-    {                          \
-        1, 1, 1, 0, 1, 1, 1, 1 \
-    }
-#define LF_CONTACT_PHASES      \
-    {                          \
-        1, 1, 1, 1, 1, 1, 1, 0 \
-    }
-#define LB_CONTACT_PHASES      \
-    {                          \
-        1, 1, 1, 1, 1, 0, 1, 1 \
-    }
-#define OVERLAP_TIME 0.0
-#define SWING_TIME 0.20
-#define FOOT_HEIGH_TIME_CONST 0.02
-#define BODY_SHIFT_PHASES      \
-    {                          \
-        1, 2, 3, 4, 5, 6, 7, 8 \
-    }
-#define FWD_BODY_BALANCE_SHIFT 0.025
-#define BACK_BODY_BALANCE_SHIFT 0.005
-#define SIDE_BODY_BALANCE_SHIFT 0.015
-#define GAIT_FRAME_RATE (1.0f / 50.0f) //# 50hz
+// ........................... //
 
 //IMPORTANT: Enable simulated commands to activate robot on Power on.
 //           It stands up and starts walking on power on.
