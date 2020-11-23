@@ -136,9 +136,5 @@ NOTE: In future calibration tool(which is under development) will be able to pro
 ```
 
 
-Walk
-<iframe width="560" height="315"
-src="https://youtu.be/xG28wMZjsg4" 
-frameborder="0" 
-allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-allowfullscreen></iframe>
+## Walk
+[![walk](https://img.youtube.com/vi/QZe1R5wRUV8/0.jpg)](https://youtu.be/xG28wMZjsg4 "Walk")
