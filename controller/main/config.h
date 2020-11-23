@@ -112,9 +112,9 @@
 #define LIE_DOWN_FEET_X_OFFSET 0.065
 
 // Gait configuration
-#define MAX_FWD_VELOCITY 0.4
-#define MAX_SIDE_VELOCITY 0.4
-#define MAX_YAW_RATE 0.35
+#define MAX_FWD_VELOCITY 0.1    // MG996R 0.1 m/s, 20kgcm servos = 0.4 m/s
+#define MAX_SIDE_VELOCITY 0.1   // MG996R 0.1 m/s, 20kgcm servos = 0.4 m/s
+#define MAX_YAW_RATE 0.1       // MG996R 0.1 m/s, 20kgcm servos = 0.35 m/s
 #define Z_CLEARANCE 0.045
 #define ALPHA 0.5
 #define BETA 0.5

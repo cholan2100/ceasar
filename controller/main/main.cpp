@@ -87,7 +87,7 @@ void control_loop(void *ignore)
             gettimeofday(&current_time, NULL);
             if ((current_time.tv_sec - start_time.tv_sec) >= 3)
             {
-                float speed = 0.06f;
+                float speed = 0.1f; //NOTE: this is max walking speed with MG996R, > risk of breaking robot
                 motion.command_speed(speed, 0.0f, 0.0f); // forward speed
                 test_walkspeed_initiated = true;
                 gettimeofday(&start_time, NULL);
