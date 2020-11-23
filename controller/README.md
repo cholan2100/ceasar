@@ -137,4 +137,4 @@ NOTE: In future calibration tool(which is under development) will be able to pro
 
 
 ## Walk
-[![walk](https://img.youtube.com/vi/QZe1R5wRUV8/0.jpg)](https://youtu.be/xG28wMZjsg4 "Walk")
+[![walk](https://img.youtube.com/vi/xG28wMZjsg4/0.jpg)](https://youtu.be/xG28wMZjsg4 "Walk")
