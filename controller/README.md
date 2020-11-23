@@ -7,6 +7,7 @@ Quadruped controller for Spot Micro using ESP32.
 ## Features:
 - [] Motion Control
     - [*] Kinematics and programmed Gait based motion
+    - [] Trotting Gait
     - [] Obstacle detection
     - [] Obstacle avoidance
     - [] MPU feedback integration for better motion control

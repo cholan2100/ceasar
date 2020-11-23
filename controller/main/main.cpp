@@ -29,7 +29,6 @@ void control_loop(void *ignore)
     // task frequency to match GAIT update frequency
     float dt = motion.getNodeConfig().dt;
     TickType_t xDelay = pdMS_TO_TICKS((int)(dt * 1000.0f));
-#define SIMULATED_COMMANDS
 #ifdef SIMULATED_COMMANDS
     bool test_stand_initiated = false;
     bool test_walk_initiated = false;

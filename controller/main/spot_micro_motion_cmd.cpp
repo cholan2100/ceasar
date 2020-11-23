@@ -51,55 +51,66 @@ SpotMicroMotionCmd::~SpotMicroMotionCmd()
 
 void SpotMicroMotionCmd::readInConfigParameters()
 {
-	//TODO: Read in from configuration file instead
-	//# Robot structure parameters
-	smnc_.smc.hip_link_length = 0.0605;
-	smnc_.smc.upper_leg_link_length = 0.11126;
-	smnc_.smc.lower_leg_link_length = 0.1185; //TODO: include foot length
-	smnc_.smc.body_width = 0.078;
-	smnc_.smc.body_length = 0.2075;
+	smnc_.debug_mode = DEBUG_MODE;
 
-	//#FIXME: Stance parameters,
-	smnc_.default_stand_height = 0.155;
-	smnc_.stand_front_x_offset = 0.015;
-	smnc_.stand_back_x_offset = 0.0;
-	smnc_.lie_down_height = 0.083;
-	smnc_.lie_down_feet_x_offset = 0.065;
+	//# Robot structure parameters
+	smnc_.smc.hip_link_length = HIP_LINK_LENGTH;
+	smnc_.smc.upper_leg_link_length = UPPER_LEG_LINK_LENGTH;
+	smnc_.smc.lower_leg_link_length = LOWER_LEG_LINK_LENGTH; //TODO: include foot length
+	smnc_.smc.body_width = BODY_WIDTH;
+	smnc_.smc.body_length = BODY_LENGTH;
+
+	// Stance parameters,
+	smnc_.default_stand_height = DEFAULT_STAND_HEIGHT;
+	smnc_.stand_front_x_offset = STAND_FRONT_X_OFFSET;
+	smnc_.stand_back_x_offset = STAND_BACL_X_OFFSET;
+	smnc_.lie_down_height = LIE_DOWN_HEIGHT;
+	smnc_.lie_down_feet_x_offset = LIE_DOWN_FEET_X_OFFSET;
+
+	//# Control Parameters
+	smnc_.transit_tau = TRANSI_TAU;
+	smnc_.transit_rl = TRANSIT_RL;
+	smnc_.transit_angle_rl = TRANSIT_ANGLE_RL;
+
+	// # Gait parameters
+	smnc_.max_fwd_velocity = MAX_FWD_VELOCITY;
+	smnc_.max_side_velocity = MAX_SIDE_VELOCITY;
+	smnc_.max_yaw_rate = MAX_YAW_RATE;
+	smnc_.z_clearance = Z_CLEARANCE;
+	smnc_.alpha = ALPHA;
+	smnc_.beta = BETA;
+	smnc_.num_phases = NUM_PHASES; // 8 phse Gait
+	smnc_.rb_contact_phases = RB_CONTACT_PHASES;
+	smnc_.rf_contact_phases = RF_CONTACT_PHASES;
+	smnc_.lf_contact_phases = LF_CONTACT_PHASES;
+	smnc_.lb_contact_phases = LB_CONTACT_PHASES;
+	smnc_.overlap_time = OVERLAP_TIME;
+	smnc_.swing_time = SWING_TIME;
+	smnc_.foot_height_time_constant = FOOT_HEIGH_TIME_CONST;
+	smnc_.body_shift_phases = BODY_SHIFT_PHASES;
+	smnc_.fwd_body_balance_shift = FWD_BODY_BALANCE_SHIFT;
+	smnc_.back_body_balance_shift = BACK_BODY_BALANCE_SHIFT;
+	smnc_.side_body_balance_shift = SIDE_BODY_BALANCE_SHIFT;
+	smnc_.dt = GAIT_FRAME_RATE;
 
 	// Servo parameters
 	smnc_.num_servos = 12;
 	smnc_.servo_max_angle_deg = 82.5;
 
-	//# Control Parameters
-	smnc_.transit_tau = 0.3;
-	smnc_.transit_rl = 0.06;
-	smnc_.transit_angle_rl = 0.35;
-
-	// # Node parameters
-	smnc_.dt = 0.02; //# 50hz
-
-	smnc_.debug_mode = DEBUG_MODE;
-	smnc_.plot_mode = false;
-
-	// # Gait parameters
-	smnc_.max_fwd_velocity = 0.4;
-	smnc_.max_side_velocity = 0.4;
-	smnc_.max_yaw_rate = 0.35;
-	smnc_.z_clearance = 0.045;
-	smnc_.alpha = 0.5;
-	smnc_.beta = 0.5;
-	smnc_.num_phases = 8; // 8 phse Gait
-	smnc_.rb_contact_phases = {1, 0, 1, 1, 1, 1, 1, 1};
-	smnc_.rf_contact_phases = {1, 1, 1, 0, 1, 1, 1, 1};
-	smnc_.lf_contact_phases = {1, 1, 1, 1, 1, 1, 1, 0};
-	smnc_.lb_contact_phases = {1, 1, 1, 1, 1, 0, 1, 1};
-	smnc_.overlap_time = 0.0;
-	smnc_.swing_time = 0.20;
-	smnc_.foot_height_time_constant = 0.02;
-	smnc_.body_shift_phases = {1, 2, 3, 4, 5, 6, 7, 8};
-	smnc_.fwd_body_balance_shift = 0.025;
-	smnc_.back_body_balance_shift = 0.005;
-	smnc_.side_body_balance_shift = 0.015;
+	// servo config map
+	smnc_.servo_config["RF_3"] = {{"num", RF_LOWER_SERVO_CHANNEL}, {"center", RF_LOWER_SERVO_CENTER}, {"range", RF_LOWER_SERVO_RANGE}, {"direction", RF_LOWER_SERVO_DIRECTION}, {"center_angle_deg", RF_LOWER_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["RF_2"] = {{"num", RF_UPPER_SERVO_CHANNEL}, {"center", RF_UPPER_SERVO_CENTER}, {"range", RF_UPPER_SERVO_RANGE}, {"direction", RF_UPPER_SERVO_DIRECTION}, {"center_angle_deg", RF_UPPER_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["RF_1"] = {{"num", RF_HIP_SERVO_CHANNEL}, {"center", RF_HIP_SERVO_CENTER}, {"range", RF_HIP_SERVO_RANGE}, {"direction", RF_HIP_SERVO_DIRECTION}, {"center_angle_deg", RF_HIP_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["RB_3"] = {{"num", RB_LOWER_SERVO_CHANNEL}, {"center", RB_LOWER_SERVO_CENTER}, {"range", RB_LOWER_SERVO_RANGE}, {"direction", RB_LOWER_SERVO_DIRECTION}, {"center_angle_deg", RB_LOWER_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["RB_2"] = {{"num", RB_UPPER_SERVO_CHANNEL}, {"center", RB_UPPER_SERVO_CENTER}, {"range", RB_UPPER_SERVO_RANGE}, {"direction", RB_UPPER_SERVO_DIRECTION}, {"center_angle_deg", RB_UPPER_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["RB_1"] = {{"num", RB_HIP_SERVO_CHANNEL}, {"center", RB_HIP_SERVO_CENTER}, {"range", RB_HIP_SERVO_RANGE}, {"direction", RB_HIP_SERVO_DIRECTION}, {"center_angle_deg", RB_HIP_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["LB_3"] = {{"num", LB_LOWER_SERVO_CHANNEL}, {"center", LB_LOWER_SERVO_CENTER}, {"range", LB_LOWER_SERVO_RANGE}, {"direction", LB_LOWER_SERVO_DIRECTION}, {"center_angle_deg", LB_LOWER_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["LB_2"] = {{"num", LB_UPPER_SERVO_CHANNEL}, {"center", LB_UPPER_SERVO_CENTER}, {"range", LB_UPPER_SERVO_RANGE}, {"direction", LB_UPPER_SERVO_DIRECTION}, {"center_angle_deg", LB_UPPER_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["LB_1"] = {{"num", LB_HIP_SERVO_CHANNEL}, {"center", LB_HIP_SERVO_CENTER}, {"range", LB_HIP_SERVO_RANGE}, {"direction", LB_HIP_SERVO_DIRECTION}, {"center_angle_deg",LB_HIP_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["LF_3"] = {{"num", LF_LOWER_SERVO_CHANNEL}, {"center", LF_LOWER_SERVO_CENTER}, {"range", LF_LOWER_SERVO_RANGE}, {"direction", LF_LOWER_SERVO_DIRECTION}, {"center_angle_deg", LF_LOWER_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["LF_2"] = {{"num", LF_UPPER_SERVO_CHANNEL}, {"center", LF_UPPER_SERVO_CENTER}, {"range", LF_UPPER_SERVO_RANGE}, {"direction", LF_UPPER_SERVO_DIRECTION}, {"center_angle_deg", LF_UPPER_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["LF_1"] = {{"num", LF_HIP_SERVO_CHANNEL}, {"center", LF_HIP_SERVO_CENTER}, {"range", LF_HIP_SERVO_RANGE}, {"direction", LF_HIP_SERVO_DIRECTION}, {"center_angle_deg", LF_HIP_SERVO_CENTER_ANG_DEG}};
+	
 
 	// Derived parameters
 	// Round result of division of floats
@@ -110,20 +121,6 @@ void SpotMicroMotionCmd::readInConfigParameters()
 	smnc_.phase_ticks = std::vector<int>{smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks,
 										 smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks};
 	smnc_.phase_length = smnc_.num_phases * smnc_.swing_ticks;
-
-	// load servo config map
-	smnc_.servo_config["RF_3"] = {{"num", 9}, {"center", 306}, {"range", 385}, {"direction", 1}, {"center_angle_deg", 99.86f}};
-	smnc_.servo_config["RF_2"] = {{"num", 8}, {"center", 306}, {"range", 407}, {"direction", 1}, {"center_angle_deg", -31.62f}};
-	smnc_.servo_config["RF_1"] = {{"num", 7}, {"center", 306}, {"range", 396}, {"direction", -1}, {"center_angle_deg", 1.67f}};
-	smnc_.servo_config["RB_3"] = {{"num", 3}, {"center", 306}, {"range", 369}, {"direction", 1}, {"center_angle_deg", 95.37f}};
-	smnc_.servo_config["RB_2"] = {{"num", 2}, {"center", 306}, {"range", 381}, {"direction", 1}, {"center_angle_deg", -37.21f}};
-	smnc_.servo_config["RB_1"] = {{"num", 1}, {"center", 306}, {"range", 403}, {"direction", 1}, {"center_angle_deg", -3.27f}};
-	smnc_.servo_config["LB_3"] = {{"num", 6}, {"center", 306}, {"range", 374}, {"direction", 1}, {"center_angle_deg", -92.65f}};
-	smnc_.servo_config["LB_2"] = {{"num", 5}, {"center", 306}, {"range", 403}, {"direction", 1}, {"center_angle_deg", 91.23f}};
-	smnc_.servo_config["LB_1"] = {{"num", 4}, {"center", 306}, {"range", 367}, {"direction", -1}, {"center_angle_deg",-7.20f}};
-	smnc_.servo_config["LF_3"] = {{"num", 12}, {"center", 306}, {"range", 385}, {"direction", 1}, {"center_angle_deg", -87.43f}};
-	smnc_.servo_config["LF_2"] = {{"num", 11}, {"center", 306}, {"range", 388}, {"direction", 1}, {"center_angle_deg", 38.21f}};
-	smnc_.servo_config["LF_1"] = {{"num", 10}, {"center", 306}, {"range", 388}, {"direction", 1}, {"center_angle_deg", 4.67f}};
 }
 
 bool SpotMicroMotionCmd::init()
