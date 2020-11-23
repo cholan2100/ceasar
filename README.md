@@ -2,9 +2,30 @@
 Quadruped controller for Spot Micro using ESP32.
 Includes controller firmware for ESP32, calibration utility to help build the robot, and an app for mobile phones to control the robot.
 
+## Action
+- Power on with robot in sleep position.
+- Robot will stand up immediately on power on.
+- It will be idle for 10 secs, so that you can keep hold of robot if any configuration is wrong.
+- After 10 seconds, robot will start to practice walk in same position.
+- After another 3 seconds, robot will start walking in straight line.
+  There may be unintentional yaw of robot during walk. This will be corrected in future.
+
 ## Action video
-[![voice](https://img.youtube.com/vi/YhH5K681pzY/0.jpg)](https://www.youtube.com/watch?v=YhH5K681pzY "App")
-[![walk](https://img.youtube.com/vi/QZe1R5wRUV8/0.jpg)](https://www.youtube.com/watch?v=QZe1R5wRUV8 "Walk")
+Walk
+<iframe width="560" height="315"
+src="https://youtu.be/xG28wMZjsg4" 
+frameborder="0" 
+allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+allowfullscreen></iframe>
+
+App
+<iframe width="560" height="315"
+src="https://www.youtube.com/watch?v=YhH5K681pzY" 
+frameborder="0" 
+allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+allowfullscreen></iframe>
+
+
 
 ## Motivation
 Michael Kubina's motivation to build a economic version of Spot Micro using ESP32 with limited entry barrier for people interested to build a Quadruped. Please refer to Michael's 3D models repo for 3D printable Spot Micro model

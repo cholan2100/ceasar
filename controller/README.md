@@ -1,6 +1,14 @@
 # Ceasar ESP32 Firmware
 Quadruped controller for Spot Micro using ESP32.
 
+## Action
+- Power on with robot in sleep position.
+- Robot will stand up immediately on power on.
+- It will be idle for 10 secs, so that you can keep hold of robot if any configuration is wrong.
+- After 10 seconds, robot will start to practice walk in same position.
+- After another 3 seconds, robot will start walking in straight line.
+  There may be unintentional yaw of robot during walk. This will be corrected in future.
+
 ## Features:
 - [] Motion Control
     - [*] Kinematics and programmed Gait based motion
@@ -126,3 +134,11 @@ NOTE: In future calibration tool(which is under development) will be able to pro
 //           to stand up position. Help it stand up to avoid Servo stalling and burn up.
 #define SIMULATED_COMMANDS
 ```
+
+
+Walk
+<iframe width="560" height="315"
+src="https://youtu.be/xG28wMZjsg4" 
+frameborder="0" 
+allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+allowfullscreen></iframe>
