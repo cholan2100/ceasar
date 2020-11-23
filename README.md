@@ -16,7 +16,7 @@ Includes controller firmware for ESP32, calibration utility to help build the ro
 
 
 ## Motivation
-Michael Kubina's motivation to build a economic version of Spot Micro using ESP32 with limited entry barrier for people interested to build a Quadruped. Please refer to Michael's 3D models repo for 3D printable Spot Micro model
+Michael Kubina's effort to build a economic version of Spot Micro using ESP32 with limited entry barrier for people interested to build a Quadruped. Please refer to Michael's 3D models repo for 3D printable Spot Micro model
 3D model: https://github.com/michaelkubina/SpotMicroESP32
 
 Initial developments on ESP32 came from Maarteen Weyn who ported the Spot Micro's python version of Inverse Kinematics to ESP32 and user interface on Android phones using Cordova framework. User inteface for this Spot ESP32 controller is heavily derived from Maarten's app using Cordova.
