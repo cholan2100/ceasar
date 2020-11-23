@@ -29,6 +29,12 @@ Mike's Spot Micro: https://github.com/mike4192/spotMicro
 ## TODO: app is still under development
 ## CAUTION: be extremely careful when using this beta state controller firmware, and do it at your own risk.
 
+## Update the sub modules
+```console
+git submodule update --init --recursive
+git submodule update --recursive
+```
+
 ## Configure
 Configure your robot using GPIO wiring and calibration data as mentioned in calibration documentation.
 NOTE: In future calibration tool(which is under development) will be able to produce this for you.
