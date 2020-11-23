@@ -51,7 +51,7 @@ SpotMicroMotionCmd::~SpotMicroMotionCmd()
 
 void SpotMicroMotionCmd::readInConfigParameters()
 {
-	smnc_.debug_mode = DEBUG_MODE;
+	smnc_.debug_mode = true; // debug logs are configured with DEBUG_LEVEL on ESP config
 
 	//# Robot structure parameters
 	smnc_.smc.hip_link_length = HIP_LINK_LENGTH;
@@ -106,11 +106,10 @@ void SpotMicroMotionCmd::readInConfigParameters()
 	smnc_.servo_config["RB_1"] = {{"num", RB_HIP_SERVO_CHANNEL}, {"center", RB_HIP_SERVO_CENTER}, {"range", RB_HIP_SERVO_RANGE}, {"direction", RB_HIP_SERVO_DIRECTION}, {"center_angle_deg", RB_HIP_SERVO_CENTER_ANG_DEG}};
 	smnc_.servo_config["LB_3"] = {{"num", LB_LOWER_SERVO_CHANNEL}, {"center", LB_LOWER_SERVO_CENTER}, {"range", LB_LOWER_SERVO_RANGE}, {"direction", LB_LOWER_SERVO_DIRECTION}, {"center_angle_deg", LB_LOWER_SERVO_CENTER_ANG_DEG}};
 	smnc_.servo_config["LB_2"] = {{"num", LB_UPPER_SERVO_CHANNEL}, {"center", LB_UPPER_SERVO_CENTER}, {"range", LB_UPPER_SERVO_RANGE}, {"direction", LB_UPPER_SERVO_DIRECTION}, {"center_angle_deg", LB_UPPER_SERVO_CENTER_ANG_DEG}};
-	smnc_.servo_config["LB_1"] = {{"num", LB_HIP_SERVO_CHANNEL}, {"center", LB_HIP_SERVO_CENTER}, {"range", LB_HIP_SERVO_RANGE}, {"direction", LB_HIP_SERVO_DIRECTION}, {"center_angle_deg",LB_HIP_SERVO_CENTER_ANG_DEG}};
+	smnc_.servo_config["LB_1"] = {{"num", LB_HIP_SERVO_CHANNEL}, {"center", LB_HIP_SERVO_CENTER}, {"range", LB_HIP_SERVO_RANGE}, {"direction", LB_HIP_SERVO_DIRECTION}, {"center_angle_deg", LB_HIP_SERVO_CENTER_ANG_DEG}};
 	smnc_.servo_config["LF_3"] = {{"num", LF_LOWER_SERVO_CHANNEL}, {"center", LF_LOWER_SERVO_CENTER}, {"range", LF_LOWER_SERVO_RANGE}, {"direction", LF_LOWER_SERVO_DIRECTION}, {"center_angle_deg", LF_LOWER_SERVO_CENTER_ANG_DEG}};
 	smnc_.servo_config["LF_2"] = {{"num", LF_UPPER_SERVO_CHANNEL}, {"center", LF_UPPER_SERVO_CENTER}, {"range", LF_UPPER_SERVO_RANGE}, {"direction", LF_UPPER_SERVO_DIRECTION}, {"center_angle_deg", LF_UPPER_SERVO_CENTER_ANG_DEG}};
 	smnc_.servo_config["LF_1"] = {{"num", LF_HIP_SERVO_CHANNEL}, {"center", LF_HIP_SERVO_CENTER}, {"range", LF_HIP_SERVO_RANGE}, {"direction", LF_HIP_SERVO_DIRECTION}, {"center_angle_deg", LF_HIP_SERVO_CENTER_ANG_DEG}};
-	
 
 	// Derived parameters
 	// Round result of division of floats
@@ -130,6 +129,7 @@ bool SpotMicroMotionCmd::init()
 	std::map<int, servocontrol::ServoConfig> servo_config;
 
 	// Loop through servo configuration dictionary in smnc_, append servo to
+	int servo_i = 1; // servos numbered 1 -12
 	for (std::map<std::string, std::map<std::string, float>>::iterator
 			 iter = smnc_.servo_config.begin();
 		 iter != smnc_.servo_config.end();
@@ -137,13 +137,14 @@ bool SpotMicroMotionCmd::init()
 	{
 
 		std::map<std::string, float> servo_config_params = iter->second;
+		temp_servo_config.channel = servo_config_params["num"];
 		temp_servo_config.center = servo_config_params["center"];
 		temp_servo_config.range = servo_config_params["range"];
-		temp_servo_config.servo = servo_config_params["num"];
 		temp_servo_config.direction = servo_config_params["direction"];
 
 		// Append to temp_servo_config_array
-		servo_config[temp_servo_config.servo] = temp_servo_config;
+		servo_config[servo_i] = temp_servo_config;
+		servo_i++;
 	}
 	servocontrol::config(servo_config);
 	return true;
@@ -270,11 +271,12 @@ void SpotMicroMotionCmd::runOnce()
 
 void SpotMicroMotionCmd::publishServoProportionalCommand()
 {
-	int servo_num;
+	// int servo_num;
 	float cmd_ang_rad;
 	float center_ang_rad;
 	float servo_proportional_cmd;
 
+	int servo_i = 1;
 	for (std::map<std::string, std::map<std::string, float>>::iterator
 			 iter = smnc_.servo_config.begin();
 		 iter != smnc_.servo_config.end();
@@ -284,11 +286,11 @@ void SpotMicroMotionCmd::publishServoProportionalCommand()
 		std::string servo_name = iter->first;
 		std::map<std::string, float> servo_config_params = iter->second;
 
-		servo_num = servo_config_params["num"];
+		// servo_num = servo_config_params["num"];
 		cmd_ang_rad = servo_cmds_rad_[servo_name];
 		center_ang_rad = servo_config_params["center_angle_deg"] * M_PI / 180.0f;
 		servo_proportional_cmd = (cmd_ang_rad - center_ang_rad) /
-									   (smnc_.servo_max_angle_deg * M_PI / 180.0f);
+								 (smnc_.servo_max_angle_deg * M_PI / 180.0f);
 
 		if (servo_proportional_cmd > 1.0f)
 		{
@@ -302,6 +304,8 @@ void SpotMicroMotionCmd::publishServoProportionalCommand()
 			ESP_LOGD(tag, "Proportional Command below -1.0 was computed, clipped to -1.0");
 			ESP_LOGD(tag, "Joint %s, Angle: %1.2f", servo_name.c_str(), cmd_ang_rad * 180.0 / M_PI);
 		}
-		servocontrol::servos_proportional(servo_num, servo_proportional_cmd);
+		servocontrol::servos_proportional(servo_i, servo_proportional_cmd);
+
+		servo_i++;
 	}
 }

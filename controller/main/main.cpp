@@ -4,6 +4,7 @@
 #include <freertos/task.h>
 #include <sys/time.h>
 
+#include "config.h"
 #include "comms.h"
 #include "servocontrol.h"
 #include "spot_micro_motion_cmd.h"
@@ -17,8 +18,7 @@ void control_loop(void *ignore)
 
     // initialize controller state machine
     static SpotMicroMotionCmd motion;
-    // bool debug_mode = motion.getNodeConfig().debug_mode; 
-    if(!motion.init())
+    if (!motion.init())
     {
         ESP_LOGE(tag, "Error initializing motion gait");
         vTaskDelete(NULL);
@@ -41,7 +41,7 @@ void control_loop(void *ignore)
     // struct timeval prof_end;
 
     // Controller loop
-    while(1)
+    while (1)
     {
         // ESP_LOGI(tag, "begin");
         motion.runOnce();
@@ -50,15 +50,14 @@ void control_loop(void *ignore)
         //TODO: establish the loop rate
         vTaskDelay(xDelay);
 
-
         // simulate commands for tests
 #ifdef SIMULATED_COMMANDS
         // initiate stand
-        if(!test_stand_initiated)
+        if (!test_stand_initiated)
         {
             struct timeval current_time;
             gettimeofday(&current_time, NULL);
-            if((current_time.tv_sec - start_time.tv_sec) >= 1)
+            if ((current_time.tv_sec - start_time.tv_sec) >= 1)
             {
                 motion.command_stand();
                 test_stand_initiated = true;
@@ -68,11 +67,11 @@ void control_loop(void *ignore)
         }
 
         // initiate walk
-        if(test_stand_initiated & !test_walk_initiated)
+        if (test_stand_initiated & !test_walk_initiated)
         {
             struct timeval current_time;
             gettimeofday(&current_time, NULL);
-            if((current_time.tv_sec - start_time.tv_sec) >= 10)
+            if ((current_time.tv_sec - start_time.tv_sec) >= 10)
             {
                 motion.command_walk();
                 test_walk_initiated = true;
@@ -82,11 +81,11 @@ void control_loop(void *ignore)
         }
 
         // add walk speed
-        if(test_walk_initiated & !test_walkspeed_initiated)
+        if (test_walk_initiated & !test_walkspeed_initiated)
         {
             struct timeval current_time;
             gettimeofday(&current_time, NULL);
-            if((current_time.tv_sec - start_time.tv_sec) >= 3)
+            if ((current_time.tv_sec - start_time.tv_sec) >= 3)
             {
                 float speed = 0.06f;
                 motion.command_speed(speed, 0.0f, 0.0f); // forward speed
@@ -103,16 +102,17 @@ void control_loop(void *ignore)
 extern "C" void app_main()
 {
     esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
         ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
     }
-    ESP_ERROR_CHECK( ret );
+    ESP_ERROR_CHECK(ret);
     ESP_LOGI(tag, "Spot Micro ESP32 controller");
 
     //TODO: check fails and update NeoPixel status
     servocontrol::init();
     comms::init();
 
-    xTaskCreate(control_loop, "controller", 1024 * 32, (void* ) 0, 10, NULL);
+    xTaskCreate(control_loop, "controller", 1024 * 32, (void *)0, 10, NULL);
 }
