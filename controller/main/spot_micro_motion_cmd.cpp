@@ -63,7 +63,7 @@ void SpotMicroMotionCmd::readInConfigParameters()
 	// Stance parameters,
 	smnc_.default_stand_height = DEFAULT_STAND_HEIGHT;
 	smnc_.stand_front_x_offset = STAND_FRONT_X_OFFSET;
-	smnc_.stand_back_x_offset = STAND_BACL_X_OFFSET;
+	smnc_.stand_back_x_offset = STAND_BACK_X_OFFSET;
 	smnc_.lie_down_height = LIE_DOWN_HEIGHT;
 	smnc_.lie_down_feet_x_offset = LIE_DOWN_FEET_X_OFFSET;
 
@@ -79,7 +79,7 @@ void SpotMicroMotionCmd::readInConfigParameters()
 	smnc_.z_clearance = Z_CLEARANCE;
 	smnc_.alpha = ALPHA;
 	smnc_.beta = BETA;
-	smnc_.num_phases = NUM_PHASES; // 8 phse Gait
+	smnc_.num_phases = NUM_PHASES; // 8 phase Gait by default
 	smnc_.rb_contact_phases = RB_CONTACT_PHASES;
 	smnc_.rf_contact_phases = RF_CONTACT_PHASES;
 	smnc_.lf_contact_phases = LF_CONTACT_PHASES;
@@ -111,15 +111,52 @@ void SpotMicroMotionCmd::readInConfigParameters()
 	smnc_.servo_config["LF_2"] = {{"num", LF_UPPER_SERVO_CHANNEL}, {"center", LF_UPPER_SERVO_CENTER}, {"range", LF_UPPER_SERVO_RANGE}, {"direction", LF_UPPER_SERVO_DIRECTION}, {"center_angle_deg", LF_UPPER_SERVO_CENTER_ANG_DEG}};
 	smnc_.servo_config["LF_1"] = {{"num", LF_HIP_SERVO_CHANNEL}, {"center", LF_HIP_SERVO_CENTER}, {"range", LF_HIP_SERVO_RANGE}, {"direction", LF_HIP_SERVO_DIRECTION}, {"center_angle_deg", LF_HIP_SERVO_CENTER_ANG_DEG}};
 
+	calcParameters();
+
+	//FIXME: error build up with time. legs become shaking
+	// With battery mass, trotting gait finds it hard to keep the balance of the rear legs
+	// gait_trot();
+}
+
+void SpotMicroMotionCmd::calcParameters()
+{
 	// Derived parameters
 	// Round result of division of floats
 	smnc_.overlap_ticks = round(smnc_.overlap_time / smnc_.dt);
 	smnc_.swing_ticks = round(smnc_.swing_time / smnc_.dt);
-	smnc_.stance_ticks = 7 * smnc_.swing_ticks;
+	if(smnc_.num_phases == 8)
+		smnc_.stance_ticks = 7 * smnc_.swing_ticks;
+	else
+		smnc_.stance_ticks = 2 * smnc_.overlap_ticks + smnc_.swing_ticks;
 	smnc_.overlap_ticks = round(smnc_.overlap_time / smnc_.dt);
-	smnc_.phase_ticks = std::vector<int>{smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks,
-										 smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks};
-	smnc_.phase_length = smnc_.num_phases * smnc_.swing_ticks;
+	if(smnc_.num_phases == 8) {
+		smnc_.phase_ticks = std::vector<int>
+								{smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks,
+								 smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks, smnc_.swing_ticks};
+		smnc_.phase_length = smnc_.num_phases * smnc_.swing_ticks;
+	} else {
+		smnc_.phase_ticks = std::vector<int>
+								{smnc_.overlap_ticks, smnc_.swing_ticks, smnc_.overlap_ticks, smnc_.swing_ticks};
+		smnc_.phase_length = 2 * smnc_.swing_ticks + 2 * smnc_.overlap_ticks;
+	}
+}
+
+void SpotMicroMotionCmd::gait_trot()
+{
+	ESP_LOGI(tag, "Trot Gait mode");
+
+	smnc_.num_phases = TROT_NUM_PHASES;
+	smnc_.rb_contact_phases = TROT_RB_CONTACT_PHASES;
+	smnc_.rf_contact_phases = TROT_RF_CONTACT_PHASES;
+	smnc_.lf_contact_phases = TROT_LF_CONTACT_PHASES;
+	smnc_.lb_contact_phases = TROT_LB_CONTACT_PHASES;
+	smnc_.overlap_time = TROT_OVERLAP_TIME;
+	smnc_.body_shift_phases = TROT_BODY_SHIFT_PHASES;
+	smnc_.fwd_body_balance_shift = TROT_FWD_BODY_BALANCE_SHIFT;
+	smnc_.back_body_balance_shift = TROT_BACK_BODY_BALANCE_SHIFT;
+	smnc_.side_body_balance_shift = TROT_SIDE_BODY_BALANCE_SHIFT;
+
+	calcParameters();
 }
 
 bool SpotMicroMotionCmd::init()

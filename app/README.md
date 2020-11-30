@@ -1,6 +1,9 @@
-# Spot Micro controller App
+# Spot ESP32 Controller App
 Controller app for the Spot Micro ESP32 model using Cordova development framework.
 
+## Credits
+Spot ESP32 Controller app is inspired by Maarteen Weyn's corodova app implementation to test the Kinematic implementation for the Spot Micro ESP32 model. Lot of code is in this app is derived from Maarteen's work.
+https://github.com/maartenweyn/SpotMicro_ESP32
 
 ## TODO: app is still under development
 
@@ -15,7 +18,7 @@ Controller app for the Spot Micro ESP32 model using Cordova development framewor
 ## App
 Make sure to turn on Bluetooth and Location, and allow required permissions.
 Only been tested on Android
-[![App](../assets/app_ss.jpeg)]
+[![App]../assets/app_ss.jpeg)]
 
 ## Build Procedure
 Cordova development framework setup guide

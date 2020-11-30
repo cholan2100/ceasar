@@ -107,7 +107,10 @@
 //TODO: optimiize
 #define DEFAULT_STAND_HEIGHT 0.155
 #define STAND_FRONT_X_OFFSET 0.015
-#define STAND_BACL_X_OFFSET 0.0
+#define STAND_BACK_X_OFFSET 0.0
+#define TROT_STAND_HEIGHT 0.17
+#define TROT_STAND_FRONT_X_OFFSET -0.020
+#define TROT_STAND_BACK_X_OFFSET -0.02
 #define LIE_DOWN_HEIGHT 0.083
 #define LIE_DOWN_FEET_X_OFFSET 0.065
 
@@ -118,7 +121,7 @@
 #define Z_CLEARANCE 0.045
 #define ALPHA 0.5
 #define BETA 0.5
-#define NUM_PHASES 8 // 8 phse Gait
+#define NUM_PHASES 8 // 8 phase Gait
 #define RB_CONTACT_PHASES      \
     {                          \
         1, 0, 1, 1, 1, 1, 1, 1 \
@@ -136,8 +139,6 @@
         1, 1, 1, 1, 1, 0, 1, 1 \
     }
 #define OVERLAP_TIME 0.0
-#define SWING_TIME 0.20
-#define FOOT_HEIGH_TIME_CONST 0.02
 #define BODY_SHIFT_PHASES      \
     {                          \
         1, 2, 3, 4, 5, 6, 7, 8 \
@@ -145,6 +146,35 @@
 #define FWD_BODY_BALANCE_SHIFT 0.025
 #define BACK_BODY_BALANCE_SHIFT 0.005
 #define SIDE_BODY_BALANCE_SHIFT 0.015
+
+#define TROT_NUM_PHASES 4   // 4 phase Gait
+#define TROT_RB_CONTACT_PHASES      \
+    {                          \
+        1, 0, 1, 1 \
+    }
+#define TROT_RF_CONTACT_PHASES      \
+    {                          \
+        1, 1, 1, 0 \
+    }
+#define TROT_LF_CONTACT_PHASES      \
+    {                          \
+        1, 0, 1, 1 \
+    }
+#define TROT_LB_CONTACT_PHASES      \
+    {                          \
+        1, 1, 1, 0 \
+    }
+#define TROT_OVERLAP_TIME 0.2
+#define TROT_BODY_SHIFT_PHASES      \
+    {                          \
+        0, 0, 0, 0 \
+    }
+#define TROT_FWD_BODY_BALANCE_SHIFT 0.00
+#define TROT_BACK_BODY_BALANCE_SHIFT 0.00
+#define TROT_SIDE_BODY_BALANCE_SHIFT 0.0
+
+#define SWING_TIME 0.20
+#define FOOT_HEIGH_TIME_CONST 0.02
 #define GAIT_FRAME_RATE (1.0f / 50.0f) //# 50hz
 
 //IMPORTANT: Enable simulated commands to activate robot on Power on.

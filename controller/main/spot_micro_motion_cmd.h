@@ -127,11 +127,14 @@ private:
 	// Changes state of the state machine
 	void changeState(std::unique_ptr<SpotMicroState> sms);
 
+	void calcParameters();
+
 public: // public command interface to quadruped
 	void command_stand();
 	void command_idle();
 	void command_walk();
 	void command_speed(float x, float y, float z);
 	void command_angle(float x, float y, float z);
+	void gait_trot();
 };
 #endif

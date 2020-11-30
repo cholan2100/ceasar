@@ -1,1 +1,1 @@
-{"plugins":["cordova-plugin-whitelist"]}
+{"plugins":["cordova-plugin-whitelist","cordova-plugin-ble-central","cordova-background-timer","cordova-plugin-geolocation","cordova-plugin-screen-orientation","es6-promise-plugin","cordova-plugin-device"]}

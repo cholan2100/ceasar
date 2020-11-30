@@ -14,12 +14,30 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-android": "^9.0.0",
+    "cordova-background-timer": "0.0.4",
     "cordova-ios": "^6.1.1",
-    "cordova-plugin-whitelist": "^1.3.4"
+    "cordova-plugin-ble-central": "^1.3.1",
+    "cordova-plugin-device": "^2.0.3",
+    "cordova-plugin-geolocation": "^4.1.0",
+    "cordova-plugin-screen-orientation": "^3.0.2",
+    "cordova-plugin-whitelist": "^1.3.4",
+    "es6-promise-plugin": "^4.2.2"
   },
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {}
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-ble-central": {
+        "IOS_INIT_ON_LOAD": "true",
+        "BLUETOOTH_USAGE_DESCRIPTION": " "
+      },
+      "cordova-background-timer": {},
+      "cordova-plugin-geolocation": {
+        "GPS_REQUIRED": "true"
+      },
+      "cordova-plugin-screen-orientation": {
+        "GPS_REQUIRED": "true"
+      },
+      "cordova-plugin-device": {}
     },
     "platforms": [
       "android",

@@ -1,51 +1,91 @@
 <!DOCTYPE html>
-<!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
 <html>
     <head>
+        <title>Spot Controller ESP32</title>
         <meta charset="utf-8">
-        <!--
-        Customize this policy to fit your own app's needs. For more guidance, see:
-            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
-        Some notes:
-            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-                * Enable inline JS: add 'unsafe-inline' to default-src
-        -->
         <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
         <meta name="color-scheme" content="light dark">
         <link rel="stylesheet" href="css/index.css">
-        <title>Hello World</title>
+        
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="lib/OnsenUI/css/onsenui.css">
+        <link rel="stylesheet" type="text/css" href="lib/OnsenUI/css/onsen-css-components.min.css">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
     </head>
     <body>
-        <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
-        </div>
         <script src="cordova.js"></script>
-        <script src="js/index.js"></script>
+        <script type="text/javascript" src="lib/OnsenUI/js/onsenui.min.js"></script>
+        <script type="text/javascript" src="lib/jquery/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="js/debug.js"></script>
+        <script type="text/javascript" src="js/storage.js"></script>
+        <script type="text/javascript" src="js/controller.js"></script>
+        <script type="text/javascript" src="js/bluetooth.js"></script>
+		<script type="text/javascript" src="js/app.js"></script>
+
+        <!-- Pages -->
+        <ons-page id="spotlink">
+			<ons-toolbar>
+				<div class="center">Spot Link</div>
+			</ons-toolbar>
+			<ons-list id="spot-devices-list">
+				<ons-list-header>Spots</ons-list-header>
+				<ons-list-item>
+					<div class="left"><ons-icon icon="md-bluetooth-search" size="40px"></ons-icon></div>
+					<div class="center"><span class="list-item__title">Scanning for robots</span></div>
+					<div class="right"><ons-progress-circular indeterminate></ons-progress-circular></div>
+				</ons-list-item>
+				<div id="spot-devices-div"><!-- fill here with devices --></div>
+			</ons-list>
+		</ons-page>
+        <ons-page id="sleep">
+			<ons-toolbar>
+			<div class="center">Spot is Ready</div>
+			</ons-toolbar>
+		
+			<br><br>
+			<!-- fixme -->
+			<center>
+				<div ><img src="img/sleep.jpg" alt="Sleeping" style="width:128px;height:128px;"></div>
+				<div ><ons-button id="wakeup_btn"><< Wakeup >></ons-button></div>
+			</center>
+			<!-- <ons-fab position="bottom right">
+				<ons-icon id ="voice_but1" icon="md-mic"></ons-icon>
+			</ons-fab> -->
+		</ons-page>
+
+		<ons-page id="controls">
+			<ons-toolbar>
+			  <div class="left">
+				<div id="status">status</div>
+				<div id="spotposition">Position</div>
+			  </div>
+		  
+			  <div class="right">
+				<ons-toolbar-button id="ble_button" icon="md-bluetooth-off"></ons-toolbar-button>
+			  </div>
+			</ons-toolbar>
+		  
+			<div id="joy1Div" style="width:200px;height:200px;margin:50px;position:fixed;top:10px;left:50px;"></div>
+			<div id="joy2Div" style="width:200px;height:200px;margin:50px;position:fixed;top:10px;right:50px;"></div>
+			<div class="slidecontainer">
+				<input type="range" min="1" max="100" value="50" class="slider" id="slider1Div"  style="position:fixed;top:260px;left:100px;">
+			</div>
+			<div class="slidecontainer">
+				<input type="range" min="1" max="100" value="50" class="slider-vertical" id="slider2Div"  style="position:fixed;top:160px;right:00px;">
+			</div>
+
+			<!-- <ons-fab position="bottom right">
+				<ons-icon id ="voice_but2" icon="md-mic"></ons-icon>
+			</ons-fab> -->
+			<div id="commands"style="position:fixed;top:300px;left:100px;">
+				<ons-button id="sleep_btn" size="25px">Sleep</ons-button>
+				<ons-button id="bark_btn" size="25px">Bark</ons-button>
+				<ons-button id="hifi_btn" size="25px">Hifi</ons-button>
+				<ons-button id="pee_btn" size="25px">Pee</ons-button>
+			</div>
+		</ons-page>
     </body>
 </html>
