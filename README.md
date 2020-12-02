@@ -11,7 +11,7 @@ Includes controller firmware for ESP32, calibration utility to help build the ro
   There may be unintentional yaw of robot during walk. This will be corrected in future.
 
 ## Action video
-[![walk](https://img.youtube.com/vi/xG28wMZjsg4/0.jpg)](https://youtu.be/xG28wMZjsg4 "Walk")
+[![walk](https://img.youtube.com/vi/fL_mEF7x1D8/0.jpg)](https://youtu.be/fL_mEF7x1D8 "Walk")
 [![voice](https://img.youtube.com/vi/YhH5K681pzY/0.jpg)](https://www.youtube.com/watch?v=YhH5K681pzY "App")
 
 
